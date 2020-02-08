@@ -5,14 +5,13 @@ import javax.swing.*;
 
 public class GUI {
 
-    JFrame f;
+    static JFrame f;
     static Scanner scan;
 
-    GUI(int n) {
+    public static void run (int n) {
         f = new JFrame();
 
         int numberOfButtons = (int) Math.pow(n, 2);
-
         ArrayList<JButton> buttons = new ArrayList(numberOfButtons);
 
         for (int i = 0; i < n; i++){
@@ -31,12 +30,5 @@ public class GUI {
         f.setSize(600,600);
         f.setVisible(true);
     }
-    public static void main(String[] args) {
 
-        System.out.println("What size is n?");
-        scan = new Scanner(System.in);
-        int n = Integer.parseInt(scan.next());
-
-        new GUI(n);
-    }
 }
