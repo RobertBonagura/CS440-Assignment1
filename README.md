@@ -1,4 +1,4 @@
-# How to use GitHub to contribute to this repositorys
+# How to use GitHub to contribute to this repository
 ## Cloning This Repository 
 
 To clone a Github repository use the following command:
