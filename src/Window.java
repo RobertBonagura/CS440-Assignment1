@@ -4,6 +4,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
 
+/**
+ * Runs window to ask user for size of n-by-n puzzle.
+ */
 public class Window {
 
    private int n;
@@ -61,13 +64,20 @@ public class Window {
       frame.setVisible(true);
    }
 
+   /**
+    * Gets n value selected by user to send to App.main() to generate GUI.
+    * Runs while loop until user clicks submit button.
+    */
    public int getN() {
       while (n == 0){
-         System.out.println("waiting for n value");
+         System.out.println("Waiting...");
       }
       return n;
    }
 
+   /**
+    * Closes window.
+    */
    public void closeWindow(){
       frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
    }

@@ -4,11 +4,21 @@ import java.util.Random;
 import java.util.Scanner;
 import javax.swing.*;
 
+/**
+ * GUI used to represent n-by-n puzzle
+ */
 public class GUI {
 
     static JFrame f;
     static Scanner scan;
 
+    /**
+     * Creates puzzle.
+     * Determines maximum number of moves a given cell has based on its
+     * location within the puzzle.
+     * Each cell displays a random number not exceeding this maximum number.
+     * @param n size of puzzle
+     */
     public static void run (int n) {
         f = new JFrame();
 
@@ -47,9 +57,14 @@ public class GUI {
         f.setVisible(true);
     }
 
-    private static String generateLabel(int numberOfMoves) {
+    /**
+     * Convert to String a number not exceeding the maximum number of moves.
+     * @param maxValue representing maximum number of possible moves
+     * @return a String representation of randomly chosen number
+     */
+    private static String generateLabel(int maxValue) {
         Random r = new Random();
-        int randNum =  r.nextInt((numberOfMoves - 1) + 1) + 1;
+        int randNum =  r.nextInt((maxValue - 1) + 1) + 1;
         String label = Integer.toString(randNum);
         return label;
     }
