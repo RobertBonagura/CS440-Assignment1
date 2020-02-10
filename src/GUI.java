@@ -1,38 +1,42 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Scanner;
 import javax.swing.*;
 
+/**
+ * Graphical user interface to display n-by-n puzzle.
+ */
 public class GUI {
 
     static JFrame f;
-    static Scanner scan;
 
-    public static void run (int n) {
+    /**
+     * Creates n-by-n puzzle based on graph.
+     * For each cell in the graph, a button is added to the GUI.
+     * Each button displays the number of jumps that cell can make.
+     * @param graph the puzzle is modeled after.
+     */
+    public static void run (Graph graph) {
+
         f = new JFrame();
-
-        int C_MIN, C_MAX, R_MIN, R_MAX;
-        C_MIN = R_MIN = 1;
-        C_MAX = R_MAX = n;
-        Cell start = new Cell(C_MIN, R_MIN);
-        Cell goal = new Cell(C_MAX, R_MAX);
-
-        int numberOfButtons = (int) Math.pow(n, 2);
+        int n = graph.getN();
+        int numberOfButtons = graph.getNumberOfCells();
         ArrayList<JButton> buttons = new ArrayList(numberOfButtons);
-        for (int c = C_MIN; c <= C_MAX; c++){
-            for (int r = R_MIN; r <= R_MAX; r++) {
+
+        int R_MIN, R_MAX, C_MIN, C_MAX;
+        R_MIN = C_MIN = 0;
+        R_MAX = C_MAX = n-1;
+
+        for (int r = R_MIN; r <= R_MAX; r++){
+            for (int c = C_MIN; c <= C_MAX; c++) {
                 if (c == C_MAX && r == R_MAX) {
-                    int numberOfMoves, cValidMoves, rValidMoves;
-                    numberOfMoves = cValidMoves = rValidMoves = 0;
-                    String label = Integer.toString(numberOfMoves);
+                    String label = Integer.toString(0);
                     buttons.add(new JButton(label));
                     continue;
                 }
-                int cValidMoves = Math.max((C_MAX - c), (c - C_MIN));
-                int rValidMoves = Math.max((R_MAX - r), (r - R_MIN));
-                int numberOfMoves = Math.max(cValidMoves, rValidMoves);
-                String label = generateLabel(numberOfMoves);
+                Cell cell = graph.findCell(r, c);
+                int numberOfJumps = cell.getNumberOfJumps();
+                String label = Integer.toString(numberOfJumps);
                 buttons.add(new JButton(label));
             }
         }
@@ -42,16 +46,8 @@ public class GUI {
         }
 
         f.setLayout(new GridLayout(n,n));
-
         f.setSize(600,600);
         f.setVisible(true);
-    }
-
-    private static String generateLabel(int numberOfMoves) {
-        Random r = new Random();
-        int randNum =  r.nextInt((numberOfMoves - 1) + 1) + 1;
-        String label = Integer.toString(randNum);
-        return label;
     }
 
 }
