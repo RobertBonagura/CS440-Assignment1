@@ -4,13 +4,18 @@ import java.util.Scanner;
 import javax.swing.*;
 
 /**
+<<<<<<< HEAD
  * Graphical user interface to display n-by-n puzzle.
+=======
+ * GUI used to represent n-by-n puzzle
+>>>>>>> ab02f182a079bf575720f782b674e3c5c4c3b020
  */
 public class GUI {
 
     static JFrame f;
 
     /**
+<<<<<<< HEAD
      * Creates n-by-n puzzle based on graph.
      * For each cell in the graph, a button is added to the GUI.
      * Each button displays the number of jumps that cell can make.
@@ -18,6 +23,15 @@ public class GUI {
      */
     public static void run (Graph graph) {
 
+=======
+     * Creates puzzle.
+     * Determines maximum number of moves a given cell has based on its
+     * location within the puzzle.
+     * Each cell displays a random number not exceeding this maximum number.
+     * @param n size of puzzle
+     */
+    public static void run (int n) {
+>>>>>>> ab02f182a079bf575720f782b674e3c5c4c3b020
         f = new JFrame();
         int n = graph.getN();
         int numberOfButtons = graph.getNumberOfCells();
@@ -50,4 +64,19 @@ public class GUI {
         f.setVisible(true);
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Convert to String a number not exceeding the maximum number of moves.
+     * @param maxValue representing maximum number of possible moves
+     * @return a String representation of randomly chosen number
+     */
+    private static String generateLabel(int maxValue) {
+        Random r = new Random();
+        int randNum =  r.nextInt((maxValue - 1) + 1) + 1;
+        String label = Integer.toString(randNum);
+        return label;
+    }
+
+>>>>>>> ab02f182a079bf575720f782b674e3c5c4c3b020
 }

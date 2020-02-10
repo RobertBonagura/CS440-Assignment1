@@ -5,11 +5,17 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 /**
+<<<<<<< HEAD:src/UserPrompt.java
  * Generates GUI for user to select size of puzzle.
  * User can select choose any sized n-by-b puzzle where the value of n
  * is either 5, 7, 9, or 11.
  */
 public class UserPrompt {
+=======
+ * Runs window to ask user for size of n-by-n puzzle.
+ */
+public class Window {
+>>>>>>> ab02f182a079bf575720f782b674e3c5c4c3b020:src/Window.java
 
    private int n;
    private JFrame frame;
@@ -69,15 +75,23 @@ public class UserPrompt {
       frame.setVisible(true);
    }
 
+   /**
+    * Gets n value selected by user to send to App.main() to generate GUI.
+    * Runs while loop until user clicks submit button.
+    */
    public int getN() {
       while (n == 0){
-         System.out.println("waiting for n value");
+         System.out.println("Waiting...");
       }
       return n;
    }
 
    /**
+<<<<<<< HEAD:src/UserPrompt.java
     * Closes the initial prompt started by the run() method.
+=======
+    * Closes window.
+>>>>>>> ab02f182a079bf575720f782b674e3c5c4c3b020:src/Window.java
     */
    public void closeWindow(){
       frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
