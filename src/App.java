@@ -20,6 +20,8 @@ public class App {
         System.out.printf("Creating %s-by-%s sized puzzle...\n", n, n);
         gui.run(graph);
         System.out.printf("Finished creating %s-by-%s sized puzzle.\n", n, n);
+        int solution = Algorithms.BFS(graph);
+        System.out.println(solution);
     }
 
 }

@@ -10,6 +10,7 @@ public class Cell {
    private int numberOfJumps;
    private LinkedList<Cell> neighbors;
    private Cell prev;
+   private boolean visited = false;
 
    /**
     * Creates a cell based on its (r,c) pair and the number cells it jumps.
@@ -41,6 +42,26 @@ public class Cell {
 
    public void setNeighbors(LinkedList<Cell> neighbors){
       this.neighbors = neighbors;
+   }
+
+   public void setPrev(Cell cell) {
+      this.prev = cell;
+   }
+
+   public boolean isVisited() {
+      return visited;
+   }
+
+   public void setVisited(boolean visited) {
+      this.visited = visited;
+   }
+
+   public void visit(){
+      setVisited(true);
+   }
+
+   public Cell getPrev() {
+      return prev;
    }
 
    /**

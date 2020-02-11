@@ -38,6 +38,7 @@ class Graph {
          for (int c = C_MIN; c <= C_MAX; c++) {
             if (c == C_MAX && r == R_MAX) { // On last cell
                Cell cell = new Cell(n - 1, n - 1, 0);
+               this.goal = cell;
                this.add(cell);
                continue;
             }
@@ -46,6 +47,9 @@ class Graph {
             int numberOfJumps = Math.max(rJumps, cJumps);
             numberOfJumps = genRandNumber(numberOfJumps);
             Cell cell = new Cell(r - 1, c - 1, numberOfJumps);
+            if (c == C_MIN && r == R_MIN){
+               this.start = cell;
+            }
             this.add(cell);
          }
       }
@@ -137,6 +141,20 @@ class Graph {
    }
 
    /**
+    * Get index of cell in underlying array.
+    * @param cell
+    * @return index
+    */
+   public int getIndex(Cell cell) {
+      int r, c;
+      r = cell.getR();
+      c = cell.getC();
+      int index = (n * r) + c;
+      return index;
+   }
+
+
+   /**
     * Generates a random number between 1 and the maximum number of jumps.
     *
     * @param numberOfJumps maximum value returned by function
@@ -166,6 +184,10 @@ class Graph {
 
    public int getN() {
       return this.n;
+   }
+
+   public Cell[] getCells(){
+      return this.getCells();
    }
 
    public Cell getStart() {
