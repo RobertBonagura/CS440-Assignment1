@@ -213,6 +213,32 @@ class Graph {
          System.out.println();
       }
    }
+
+   /**
+    * Starts at Goal cell and traces back to find distance to the Start cell.
+    * This method relies on each cell's getPrev() method, which will be null
+    * if BFS has not yet been used on the graph.
+    * If any cell in the path from Goal to Start is null, the method will
+    * return -1.
+    * @param start
+    * @param goal
+    * @return distance from Start to Goal in terms of number of jumps
+    */
+   public int cellDistance(Cell start, Cell goal) {
+      Cell cell = goal;
+      int kValue = 0;
+      if (start.equals(goal)){
+         return 0;
+      }
+      while (cell.getPrev() != null){
+         cell = cell.getPrev();
+         kValue++;
+         if (cell.equals(start)) {
+            return kValue;
+         }
+      }
+      return -1;
+   }
 }
 
 
