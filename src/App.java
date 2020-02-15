@@ -11,7 +11,7 @@ public class App {
         UserPrompt prompt = new UserPrompt();
         System.out.println("Waiting for user to select n-by-n size...");
         int n = prompt.getN();
-
+        //int n = 100;
         Graph graph = new Graph(n);
         graph.populateGraph();
         graph.populateNeighbors();
@@ -25,6 +25,8 @@ public class App {
         Solution solution = Algorithms.BFS(graph);
         System.out.println(solution);
 
+        Solution solution2 = Algorithms.AStarSearch(graph);
+        System.out.println(solution2);
 
     }
 

@@ -1,3 +1,4 @@
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -239,6 +240,18 @@ class Graph {
       }
       return -1;
    }
+
+   public int heuristic(Cell cell){
+     if (cell.getR() == n && cell.getC() == n){
+        return 2;
+     } else if (cell.getR() == n || cell.getC() == n){
+        return 1;
+     } else {
+        return 0;
+     }
+   }
+
+
 }
 
 

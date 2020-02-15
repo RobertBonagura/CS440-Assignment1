@@ -33,7 +33,7 @@ public class Solution {
    public String toString() {
       StringBuilder sb = new StringBuilder();
       sb.append("The solution is: " + k + "\n");
-      if (!path.equals(null)) {
+      if (path.equals(null) == false) {
          sb.append("The path to the solution is: ");
          Cell cell;
          for (int i = 0; i < k; i++){

@@ -1,9 +1,10 @@
+import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
  * Cell class is used to represent each cell within a n-by-n puzzle.
  */
-public class Cell {
+public class Cell{
 
    private int r;
    private int c;
@@ -14,11 +15,12 @@ public class Cell {
 
    /**
     * Creates a cell based on its (r,c) pair and the number cells it jumps.
-    * @param r row
-    * @param c column
+    *
+    * @param r             row
+    * @param c             column
     * @param numberOfJumps cells it can jump
     */
-   public Cell(int r, int c, int numberOfJumps){
+   public Cell(int r, int c, int numberOfJumps) {
       this.r = r;
       this.c = c;
       this.numberOfJumps = numberOfJumps;
@@ -36,11 +38,11 @@ public class Cell {
       return numberOfJumps;
    }
 
-   public LinkedList<Cell> getNeighbors(){
+   public LinkedList<Cell> getNeighbors() {
       return this.neighbors;
    }
 
-   public void setNeighbors(LinkedList<Cell> neighbors){
+   public void setNeighbors(LinkedList<Cell> neighbors) {
       this.neighbors = neighbors;
    }
 
@@ -56,7 +58,7 @@ public class Cell {
       this.visited = visited;
    }
 
-   public void visit(){
+   public void visit() {
       setVisited(true);
    }
 
@@ -67,7 +69,7 @@ public class Cell {
    /**
     * Prints a cell in (c,r) format.
     */
-   public String toString(){
+   public String toString() {
       String string = "(" + getR() + " , " + getC() + ")";
       return string;
    }

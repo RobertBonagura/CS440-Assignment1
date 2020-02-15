@@ -1,7 +1,9 @@
 import sun.awt.image.ImageWatched;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  * Class used to hold all of the algorithms.
@@ -47,6 +49,48 @@ public class Algorithms {
       }
 
       return solution;
+   }
+
+   public static Solution AStarSearch(Graph graph){
+      Solution solution;
+      PriorityQueue<Cell> queue = new PriorityQueue<>(new Heuristic(graph));
+      Cell cell = graph.getStart();
+
+      long startTime = System.nanoTime();
+      cell.visit();
+      queue.add(cell);
+      while (queue.size() != 0) {
+         cell = queue.remove();
+         if (cell.getNumberOfJumps() == 0){
+            break;
+         }
+         LinkedList<Cell> neighbors = cell.getNeighbors();
+         for (int i = 0; i < neighbors.size(); i++){
+            Cell neighbor = neighbors.get(i);
+            if (neighbor.isVisited() == false){
+               neighbor.visit();
+               neighbor.setPrev(cell);
+               queue.add(neighbor);
+            }
+            System.out.printf("In the queue:");
+            for (Cell c : queue){
+               System.out.print(c.toString());
+            }
+            System.out.println();
+         }
+      }
+
+      long totalTime = System.nanoTime() - startTime;
+      int kValue = graph.cellDistance(graph.getStart(), graph.getGoal());
+      if (kValue < 0){
+         solution = new Solution(kValue, totalTime);
+      } else {
+         LinkedList<Cell> pathToSolution = generateSolutionPath(graph);
+         solution = new Solution(kValue, pathToSolution, totalTime);
+      }
+
+      return solution;
+
    }
 
    private static LinkedList<Cell> generateSolutionPath(Graph graph) {
