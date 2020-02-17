@@ -155,12 +155,13 @@ public class Algorithms {
    
    
    
-   
+   /**issue: even if the graph changes, bfs[] outputs the same exact distances as the original graph*/
    
    
    
    public static void HillClimbing(Graph graph, int puzzleValue, int iterations){
 	   GUI gui1 = new GUI(); // for testing
+	   GUI gui2 = new GUI(); // for testing
 
 	   
 	   int valueafterIteration[]= new int[iterations +1];
@@ -175,10 +176,10 @@ public class Algorithms {
 	   
 	   for(int i = 1; i <= iterations; i++){
 		   System.out.println("entered iteration loop");
-		   int [] BFSvals = Algorithms.BFS(lastGraph);
-		   newpuzzleValue = Algorithms.getPuzzleValue(BFSvals);  
-		   
+		   int [] BFSvals = Algorithms.BFS(lastGraph); // THESE ARE ALWAYS THE SAME!!! WHY????
+		   newpuzzleValue = Algorithms.getPuzzleValue(BFSvals);  	   
 		   valueafterIteration[i]= newpuzzleValue; 
+		   
 		   System.out.println("				lastPuzzleValue= " + lastPuzzleValue);
 		   System.out.println("				newpuzzleValue= " + newpuzzleValue);
 		   
@@ -196,7 +197,9 @@ public class Algorithms {
 	   
 	   
 	   
-	
+	   gui1.run(lastGraph);
+	   int [] BFSdis = Algorithms.BFS(lastGraph);
+	   gui2.createSimpleGUI(n, BFSdis);
 /*	   
 	   // display:
 	   gui1.run(lastGraph);
