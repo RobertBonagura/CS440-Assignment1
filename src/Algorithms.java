@@ -25,24 +25,18 @@ public class Algorithms {
       
       cell.visit();
       queue.add(cell);
-      //System.out.println("before while loop");
       while (queue.size() != 0) {
-    	 // System.out.println("entered while loop");
          cell = queue.remove();
-         //System.out.println("cell = queue.remove(); => " + cell);
 
          if(!cell.equals(graph.getGoal())){
          LinkedList<Cell> neighbors = cell.getNeighbors();
-        // System.out.println("neighbors.size()  = " + neighbors.size());
          
          if (!(cell.getNeighbors() == null)){
         	 for (int i = 0; i < neighbors.size(); i++){
                  Cell neighbor = neighbors.get(i);
-                //System.out.println("neighbors.get(i) = " + neighbors.get(i));
                  if (neighbor.isVisited() == false){
                     neighbor.visit();
                     neighbor.setPrev(cell);
-                    //System.out.println("neighbor = " +neighbor +" and its prev= " + neighbor.getPrev());
                     queue.add(neighbor);
                  }
               } 
@@ -101,21 +95,22 @@ public class Algorithms {
    
    
 
-   
+  /**HillClimbingHelp duplicates the graph but changes 1 cell (and its properties) 
+   * @param graph input
+   * @return the new changed graph
+   * */ 
   
    
    public static Graph HillClimbingHelp(Graph graph){
+	   int n = graph.n;
 	   
 	   Graph currentGraph  = graph; // MAKE copy
 	   
 
 		   int randomIndex = (int )(Math.random() * graph.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
 		   
-		  //Cell randCell = graph.getCellAt(randomIndex);
 		   Cell randCell = currentGraph.getCellAt(randomIndex);
 		   
-		   System.out.println("Cell randomly picked for exachange is" + randCell + "  at index = " +  randomIndex
-				   + "  value = " + randCell.getNumberOfJumps());
 		      int R_MIN, R_MAX, C_MIN, C_MAX;
 		      R_MIN = C_MIN = 1;
 		      R_MAX = C_MAX = graph.n;
@@ -124,7 +119,6 @@ public class Algorithms {
 		      int c = randCell.getC() + 1;
 		      
 		      
-		      //if row = 0 --> r = 1
 		   int rJumps = Math.max((R_MAX - r), (r - R_MIN));
            int cJumps = Math.max((C_MAX - c), (c - C_MIN));
            int numberOfJumps = Math.max(rJumps, cJumps);
@@ -136,17 +130,18 @@ public class Algorithms {
            }
           
            currentGraph.getCellAt(randomIndex).setNumberOfJumps(randjumps);// updates number of jumps  
-           System.out.println("new #jumps = " + currentGraph.getCellAt(randomIndex).getNumberOfJumps());
            currentGraph.deleteNeighbors(randCell); // erases old neighbors  
-           // make sure all old edges are removed!!
            
-           currentGraph.findNeighbors(randCell); // adds the new neighbors
-           // adding wrong neighbors!!
-           
-           System.out.println("new value of cell is " + randCell.getNumberOfJumps() + "  at index = " +  randomIndex);
-           System.out.println("new neighbors of cell are: " );
+           currentGraph.findNeighbors(randCell);
            currentGraph.showNeighbors(randCell);
-           //replacement is done correctly.
+
+           
+           // Now replace setPrev and visited !!!!!!!!!!!!!!!!!!!!!!
+           for(int i = 0 ; i< n*n ; i++){
+        	   currentGraph.getCellAt(i).setPrev(null);
+        	   currentGraph.getCellAt(i).setVisited(false);
+           }
+           
 	
            return currentGraph;
 	   
@@ -155,7 +150,7 @@ public class Algorithms {
    
    
    
-   /**issue: even if the graph changes, bfs[] outputs the same exact distances as the original graph*/
+   /**ISSUE: outputs the right k value but finalGraph doesnt display the right graph!*/
    
    
    
@@ -168,15 +163,15 @@ public class Algorithms {
 	   valueafterIteration[0]= puzzleValue;
 	   
 	   int n = graph.getN();
-	   Graph lastGraph = HillClimbingHelp(graph);  
+	   Graph lastGraph = HillClimbingHelp(graph); 
+	   Graph finalGraph = graph;
 	   int lastPuzzleValue = valueafterIteration[0];
 	   int newpuzzleValue = 0;
 
 	   System.out.println("#ITERATIONS  = " + iterations);
 	   
 	   for(int i = 1; i <= iterations; i++){
-		   System.out.println("entered iteration loop");
-		   int [] BFSvals = Algorithms.BFS(lastGraph); // THESE ARE ALWAYS THE SAME!!! WHY????
+		   int [] BFSvals = Algorithms.BFS(lastGraph); 
 		   newpuzzleValue = Algorithms.getPuzzleValue(BFSvals);  	   
 		   valueafterIteration[i]= newpuzzleValue; 
 		   
@@ -184,21 +179,31 @@ public class Algorithms {
 		   System.out.println("				newpuzzleValue= " + newpuzzleValue);
 		   
 		   
+		   
 		   if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ){
-			   System.out.println("ENTERED if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ");
+			  System.out.println("ENTERED if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ");
+			  finalGraph = lastGraph; // why doesnt it work???
+			  System.out.println("final graph:");
+			  //finalGraph.show();
+			  int x = Algorithms.getPuzzleValue(Algorithms.BFS(finalGraph));
+			  System.out.println("k value of final graph = " + x);
 			   lastPuzzleValue = newpuzzleValue;	
 			   if(i+1 <= iterations){ // to save the last graph
-				   System.out.println("ENTERED if(i+1 <= iterations)");
+				//   System.out.println("ENTERED if(i+1 <= iterations)");
 				   lastGraph = HillClimbingHelp(lastGraph);
 			   }
-		   }		  
+		   }
+		   
+		   // if this is last iteration and lastPuzzleValue is > newpuzzlevalue, save graph with lowest
+
+		   
 	   }
 	 
 	   
 	   
 	   
-	   gui1.run(lastGraph);
-	   int [] BFSdis = Algorithms.BFS(lastGraph);
+	   gui1.run(finalGraph);
+	   int [] BFSdis = Algorithms.BFS(finalGraph);
 	   gui2.createSimpleGUI(n, BFSdis);
 /*	   
 	   // display:
@@ -226,6 +231,8 @@ public class Algorithms {
       
 	   	gui2.createSimpleGUI(n, BFSdis);
 */	   
+   
+	   System.out.println("After " + iterations +" iterations, the new k value is: "+ lastPuzzleValue);
    }
 
 }
