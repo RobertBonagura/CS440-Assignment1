@@ -38,6 +38,10 @@ public class Cell{
       return numberOfJumps;
    }
 
+   public void setNumberOfJumps(int numberOfJumps) {
+      this.numberOfJumps = numberOfJumps;
+   }
+
    public LinkedList<Cell> getNeighbors() {
       return this.neighbors;
    }

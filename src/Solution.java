@@ -33,7 +33,7 @@ public class Solution {
    public String toString() {
       StringBuilder sb = new StringBuilder();
       sb.append("The solution is: " + k + "\n");
-      if (path.equals(null) == false) {
+      if (path != null) {
          sb.append("The path to the solution is: ");
          Cell cell;
          for (int i = 0; i < k; i++){
@@ -45,5 +45,9 @@ public class Solution {
       sb.append("\nFound in: " + (time / Math.pow(10,6)) + " ms\n");
       String result = sb.toString();
       return result;
+   }
+
+   public int getK(){
+      return this.k;
    }
 }

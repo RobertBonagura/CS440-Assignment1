@@ -10,6 +10,7 @@ class Graph {
    private int n, numberOfCells;
    private Cell[] cells; //Adjacency Lists
    private Cell start, goal;
+   private int[] distances;
 
    /**
     * Creates a graph of size n-by-n.
@@ -22,6 +23,15 @@ class Graph {
       this.cells = new Cell[numberOfCells];
       this.start = cells[0];
       this.goal = cells[numberOfCells - 1];
+   }
+
+   Graph(Graph graph){
+      this.n = graph.getN();
+      this.numberOfCells = graph.getNumberOfCells();
+      this.cells = graph.getCells();
+      this.start = graph.getStart();
+      this.goal = graph.getGoal();
+      this.distances = graph.getDistances();
    }
 
    /**
@@ -141,6 +151,10 @@ class Graph {
       return cell;
    }
 
+   public Cell findCell(int index){
+      return cells[index];
+   }
+
    /**
     * Get index of cell in underlying array.
     * @param cell
@@ -188,7 +202,7 @@ class Graph {
    }
 
    public Cell[] getCells(){
-      return this.getCells();
+      return this.cells;
    }
 
    public Cell getStart() {
@@ -197,6 +211,10 @@ class Graph {
 
    public Cell getGoal() {
       return goal;
+   }
+
+   public void deleteNeighbors(Cell cell){
+      cell.setNeighbors(null);
    }
 
    /**
@@ -249,6 +267,18 @@ class Graph {
      } else {
         return 0;
      }
+   }
+
+   public void setDistances(){
+      this.distances = new int[numberOfCells];
+      for (int i = 0; i < numberOfCells; i++) {
+         int value = cellDistance(start, cells[i]);
+         this.distances[i] = value;
+      }
+   }
+
+   public int[] getDistances(){
+      return this.distances;
    }
 
 

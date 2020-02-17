@@ -13,7 +13,7 @@ public class App {
         int n = prompt.getN();
         //int n = 100;
         Graph graph = new Graph(n);
-        graph.populateGraph();
+        graph.populateGraph(); // binds numbers of jumps to graph
         graph.populateNeighbors();
         graph.show();
 
@@ -25,8 +25,25 @@ public class App {
         Solution solution = Algorithms.BFS(graph);
         System.out.println(solution);
 
+        // Visualize number of moves for each cell
+        //int[] distancePerCell = graph.getDistances();
+        //GUI numberOfMovesGUI = new GUI();
+        //numberOfMovesGUI.createNumberOfMovesGUI(n, distancePerCell);
+
+        // Add Hill Climbing puzzle
+        int iterations = 5;
+        Graph newGraph = Algorithms.HillClimbingHelp(graph);
+        //newGraph.show();
+
+        Graph hillGraph = Algorithms.HillClimbing(graph, solution.getK(), iterations);
+        GUI hillGUI = new GUI();
+        hillGUI.run(hillGraph);
+        // Shortest Path First
+
         Solution solution2 = Algorithms.AStarSearch(graph);
         System.out.println(solution2);
+
+        // Genetic algorithm
 
     }
 
