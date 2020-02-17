@@ -74,9 +74,12 @@ public class UserPrompt {
     * Runs while loop until user clicks submit button.
     */
    public int getN() {
+	   //int i = 0;
       while (n == 0){
-         System.out.println("Waiting...");
+        System.out.println("Waiting...");
+    	  //i++;
       }
+      
       return n;
    }
 

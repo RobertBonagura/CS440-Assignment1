@@ -36,6 +36,9 @@ public class Cell {
    public int getNumberOfJumps() {
       return numberOfJumps;
    }
+   public void setNumberOfJumps(int jumps){
+	   this.numberOfJumps = jumps;
+   }
 
    public LinkedList<Cell> getNeighbors(){
       return this.neighbors;
@@ -43,6 +46,7 @@ public class Cell {
 
    public void setNeighbors(LinkedList<Cell> neighbors){
       this.neighbors = neighbors;
+      System.out.println("setNeighbors -->" + this.neighbors);
    }
 
    public void setPrev(Cell cell) {

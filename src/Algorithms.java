@@ -12,6 +12,7 @@ public class Algorithms {
     * @return value of the puzzle.
     */
    public static int[] BFS(Graph graph){
+	   System.out.println("BFS called");
 
       LinkedList<Cell> queue = new LinkedList<>();
       
@@ -105,12 +106,14 @@ public class Algorithms {
    
    public static Graph HillClimbingHelp(Graph graph){
 	   
-	   Graph currentGraph  = graph; // does it clone it?
+	   Graph currentGraph  = graph; // MAKE copy
 	   
 
 		   int randomIndex = (int )(Math.random() * graph.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
 		   
-		   Cell randCell = graph.getCellAt(randomIndex);
+		  //Cell randCell = graph.getCellAt(randomIndex);
+		   Cell randCell = currentGraph.getCellAt(randomIndex);
+		   
 		   System.out.println("Cell randomly picked for exachange is" + randCell + "  at index = " +  randomIndex
 				   + "  value = " + randCell.getNumberOfJumps());
 		      int R_MIN, R_MAX, C_MIN, C_MAX;
@@ -131,54 +134,69 @@ public class Algorithms {
            while(randjumps == randCell.getNumberOfJumps()){
         	   randjumps = ran.nextInt((numberOfJumps - 1) + 1) + 1; // find a way to reduce code
            }
+          
+           currentGraph.getCellAt(randomIndex).setNumberOfJumps(randjumps);// updates number of jumps  
+           System.out.println("new #jumps = " + currentGraph.getCellAt(randomIndex).getNumberOfJumps());
+           currentGraph.deleteNeighbors(randCell); // erases old neighbors  
+           // make sure all old edges are removed!!
            
-           currentGraph.getCellAt(randomIndex).setNumberOfJumps(randjumps);// updates number of jumps       
-           currentGraph.deleteNeighbors(randCell); // erases old neighbors          
            currentGraph.findNeighbors(randCell); // adds the new neighbors
+           // adding wrong neighbors!!
            
            System.out.println("new value of cell is " + randCell.getNumberOfJumps() + "  at index = " +  randomIndex);
            System.out.println("new neighbors of cell are: " );
            currentGraph.showNeighbors(randCell);
            //replacement is done correctly.
-	return currentGraph;
+	
+           return currentGraph;
 	   
    }
+   
+   
+   
+   
+   
+   
+   
+   
    public static void HillClimbing(Graph graph, int puzzleValue, int iterations){
-	   int oldPuzzleValue = puzzleValue;
-	   GUI gui1 = new GUI(); // new graph
-	   GUI gui2 = new GUI();// bfs of graph
-	   GUI gui3 = new GUI();
+	   GUI gui1 = new GUI(); // for testing
+
 	   
 	   int valueafterIteration[]= new int[iterations +1];
-	   valueafterIteration[0]= oldPuzzleValue;
+	   valueafterIteration[0]= puzzleValue;
 	   
 	   int n = graph.getN();
 	   Graph lastGraph = HillClimbingHelp(graph);  
-	   int lastPuzzleValue = 0;
+	   int lastPuzzleValue = valueafterIteration[0];
 	   int newpuzzleValue = 0;
 
 	   System.out.println("#ITERATIONS  = " + iterations);
 	   
 	   for(int i = 1; i <= iterations; i++){
 		   System.out.println("entered iteration loop");
-
-		    newpuzzleValue = Algorithms.getPuzzleValue(Algorithms.BFS(lastGraph));  
-		   valueafterIteration[i]= newpuzzleValue; 
-		   System.out.println("valueafterIteration[i]= " + valueafterIteration[i]);
+		   int [] BFSvals = Algorithms.BFS(lastGraph);
+		   newpuzzleValue = Algorithms.getPuzzleValue(BFSvals);  
 		   
-		   // if it was negative, it has to become less negative, and if +, it has to be smaller in magnitude		   
+		   valueafterIteration[i]= newpuzzleValue; 
+		   System.out.println("				lastPuzzleValue= " + lastPuzzleValue);
+		   System.out.println("				newpuzzleValue= " + newpuzzleValue);
+		   
+		   
 		   if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ){
+			   System.out.println("ENTERED if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ");
 			   lastPuzzleValue = newpuzzleValue;	
 			   if(i+1 <= iterations){ // to save the last graph
-			   lastGraph = HillClimbingHelp(lastGraph);
+				   System.out.println("ENTERED if(i+1 <= iterations)");
+				   lastGraph = HillClimbingHelp(lastGraph);
 			   }
-		   }		 // NOTE: the only time graph changes is if it improves!   //problem: it's ahead!
+		   }		  
 	   }
 	 
 	   
 	   
 	   
-	   
+	
 /*	   
 	   // display:
 	   gui1.run(lastGraph);

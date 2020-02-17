@@ -115,6 +115,11 @@ class Graph {
       return neighbors;
    }
 
+   
+   //new
+   public void deleteNeighbors(Cell cell){
+	   cell.setNeighbors(null);
+   }
    /**
     * Add cell to graph.
     * Calculates index to add to based on cell's (c,r) values.
@@ -152,6 +157,18 @@ class Graph {
       int index = (n * r) + c;
       return index;
    }
+   // new
+   public Cell getCellAt(int index){
+	   int row = 0;
+	   int col = 0;
+	   int x = index;
+	   while((x- n) >= 0){
+		   x=x-n;
+		   row++;
+	   }
+		col = index - row*n;
+		return this.findCell(row, col);
+   } 
 
 
    /**
@@ -160,7 +177,7 @@ class Graph {
     * @param numberOfJumps maximum value returned by function
     * @return randNum The random number no greater than numberOfMoves
     */
-   private int genRandNumber(int numberOfJumps) {
+   public int genRandNumber(int numberOfJumps) {
       Random r = new Random();
       int randNum = r.nextInt((numberOfJumps - 1) + 1) + 1;
       return randNum;
