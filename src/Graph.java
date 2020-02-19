@@ -1,3 +1,5 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -28,10 +30,47 @@ class Graph {
    Graph(Graph graph){
       this.n = graph.getN();
       this.numberOfCells = graph.getNumberOfCells();
-      this.cells = graph.getCells();
-      this.start = graph.getStart();
-      this.goal = graph.getGoal();
-      this.distances = graph.getDistances();
+      this.cells = new Cell[numberOfCells];
+      Cell[] graphCells = graph.getCells();
+      for (int i = 0; i < numberOfCells; i++){
+         this.cells[i] = new Cell(graphCells[i]);
+      }
+      this.start = this.cells[0];
+      this.goal = this.cells[numberOfCells - 1];
+      this.findAndSetNeighbors();
+   }
+
+   private void findAndSetNeighbors() {
+      for (int i = 0; i < this.numberOfCells; i++){
+         LinkedList<Cell> neighbors = this.findNeighbors(cells[i]);
+         this.cells[i].setNeighbors(neighbors);
+      }
+   }
+
+   public void changeOneRandomCell(){
+      int randomIndex = (int )(Math.random() * this.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
+      Cell randCell = this.findCell(randomIndex);
+
+      int R_MIN, R_MAX, C_MIN, C_MAX;
+      R_MIN = C_MIN = 1;
+      R_MAX = C_MAX = this.getN();
+
+      int r = randCell.getR() + 1;
+      int c = randCell.getC() + 1;
+
+      int rJumps = Math.max((R_MAX - r), (r - R_MIN));
+      int cJumps = Math.max((C_MAX - c), (c - C_MIN));
+      int numberOfJumps = Math.max(rJumps, cJumps);
+      numberOfJumps = genRandNumber(numberOfJumps);
+
+      System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, numberOfJumps);
+
+      randCell.setNumberOfJumps(numberOfJumps);// updates number of jumps
+      this.deleteNeighbors(randCell); // erases old neighbors
+      this.findNeighbors(randCell);
+
+      return;
+
    }
 
    /**
@@ -175,7 +214,7 @@ class Graph {
     * @param numberOfJumps maximum value returned by function
     * @return randNum The random number no greater than numberOfMoves
     */
-   private int genRandNumber(int numberOfJumps) {
+   private static int genRandNumber(int numberOfJumps) {
       Random r = new Random();
       int randNum = r.nextInt((numberOfJumps - 1) + 1) + 1;
       return randNum;

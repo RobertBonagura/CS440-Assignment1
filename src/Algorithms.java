@@ -102,44 +102,7 @@ public class Algorithms {
 
    }
 
-   public static Graph HillClimbingHelp(Graph graph){
-      Graph newGraph = new Graph(graph);
-      int randomIndex = (int )(Math.random() * graph.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
-      Cell randCell = newGraph.findCell(randomIndex);
 
-      int R_MIN, R_MAX, C_MIN, C_MAX;
-      R_MIN = C_MIN = 1;
-      R_MAX = C_MAX = graph.getN();
-
-      int r = randCell.getR() + 1;
-      int c = randCell.getC() + 1;
-
-      int rJumps = Math.max((R_MAX - r), (r - R_MIN));
-      int cJumps = Math.max((C_MAX - c), (c - C_MIN));
-      int numberOfJumps = Math.max(rJumps, cJumps);
-      Random ran = new Random();
-      int randjumps = randCell.getNumberOfJumps();
-
-      while(randjumps == randCell.getNumberOfJumps()){
-         randjumps = ran.nextInt((numberOfJumps - 1) + 1) + 1; // find a way to reduce code
-      }
-      System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, randjumps);
-
-      randCell.setNumberOfJumps(randjumps);// updates number of jumps
-      newGraph.deleteNeighbors(randCell); // erases old neighbors
-      newGraph.findNeighbors(randCell);
-      //newGraph.showNeighbors(randCell);
-
-      // Now replace setPrev and visited !!!!!!!!!!!!!!!!!!!!!!
-      /* Commented this out bc added to beginning of BFS and A* Search methods
-      for(int i = 0 ; i < n*n ; i++){
-         newGraph.findCell(i).setPrev(null);
-         newGraph.findCell(i).setVisited(false);
-      }
-      */
-      return newGraph;
-
-   }
 
    private static int getKValue(int[] distances) {
       int kValue = distances[distances.length -1 ]; // get goal Value
@@ -186,7 +149,8 @@ public class Algorithms {
 
       for (int i = 1; i <= iterations; i++){
          System.out.print("iteration " + i + ": ");
-         Graph newGraph = HillClimbingHelp(curGraph);
+         Graph newGraph = new Graph(curGraph);
+         newGraph.changeOneRandomCell();
          Solution solution = BFS(newGraph);
          int newK = solution.getK();
          System.out.printf("current is %d and new is %d\n", currentK, newK);
@@ -194,23 +158,20 @@ public class Algorithms {
             if (newK <= currentK && newK > 0){
                System.out.printf("Replacing %d with %d\n", currentK, newK);
                currentK = newK;
-               curGraph = newGraph;
+               curGraph = new Graph(newGraph);
             }
          } else {
             if (newK >= currentK){
                System.out.printf("Replacing %d with %d\n", currentK, newK);
                currentK = newK;
-               curGraph = newGraph;
+               curGraph = new Graph(newGraph);
             }
          }
          valueOfIterations[i] = newK;
       }
       return curGraph;
 
-
-
-
-
-
    }
+
+
 }
