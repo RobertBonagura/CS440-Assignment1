@@ -15,13 +15,13 @@ public class App {
         Graph graph = new Graph(n);
         graph.populateGraph(); // binds numbers of jumps to graph
         graph.populateNeighbors();
-        graph.show();
+        //graph.show();
 
         GUI gui = new GUI();
         System.out.printf("Creating %s-by-%s sized puzzle...\n", n, n);
         gui.run(graph);
         System.out.printf("Finished creating %s-by-%s sized puzzle.\n", n, n);
-
+        System.out.println("BFS search on original graph");
         Solution solution = Algorithms.BFS(graph);
         System.out.println(solution);
 
@@ -30,20 +30,20 @@ public class App {
         //GUI numberOfMovesGUI = new GUI();
         //numberOfMovesGUI.createNumberOfMovesGUI(n, distancePerCell);
 
-        // Add Hill Climbing puzzle
         int iterations = 5;
-        Graph newGraph = Algorithms.HillClimbingHelp(graph);
-        //newGraph.show();
-
+        System.out.println("BFS search on result of HillClimbing");
         Graph hillGraph = Algorithms.HillClimbing(graph, solution.getK(), iterations);
-        GUI hillGUI = new GUI();
-        hillGUI.run(hillGraph);
-        // Shortest Path First
-
-        Solution solution2 = Algorithms.AStarSearch(graph);
+        Solution solution2 = Algorithms.BFS(hillGraph);
         System.out.println(solution2);
 
-        // Genetic algorithm
+        System.out.println("A* search on original graph");
+        Solution solution3 = Algorithms.AStarSearch(graph);
+        System.out.println(solution3);
+
+        System.out.println("A* search on result of HillClimbing");
+        Solution solution4 = Algorithms.AStarSearch(hillGraph);
+        System.out.println(solution4);
+
 
     }
 

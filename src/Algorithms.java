@@ -14,6 +14,12 @@ public class Algorithms {
     */
    public static Solution BFS(Graph graph){
 
+      int numberOfCells = graph.getNumberOfCells();
+      for(int i = 0 ; i < numberOfCells ; i++){
+         graph.findCell(i).setPrev(null);
+         graph.findCell(i).setVisited(false);
+      }
+
       Solution solution;
       LinkedList<Cell> queue = new LinkedList<>();
       Cell cell = graph.getStart();
@@ -39,9 +45,8 @@ public class Algorithms {
       long totalTime = System.nanoTime() - startTime;
 
       graph.setDistances();
-      getKValue(graph.getDistances());
+      int kValue = getKValue(graph.getDistances());
 
-      int kValue = graph.cellDistance(graph.getStart(), graph.getGoal());
       if (kValue < 0){
          solution = new Solution(kValue, totalTime);
       } else {
@@ -53,6 +58,13 @@ public class Algorithms {
    }
 
    public static Solution AStarSearch(Graph graph){
+
+      int numberOfCells = graph.getNumberOfCells();
+      for(int i = 0 ; i < numberOfCells ; i++){
+         graph.findCell(i).setPrev(null);
+         graph.findCell(i).setVisited(false);
+      }
+
       Solution solution;
       PriorityQueue<Cell> queue = new PriorityQueue<>(new Heuristic(graph));
       Cell cell = graph.getStart();
@@ -73,19 +85,12 @@ public class Algorithms {
                neighbor.setPrev(cell);
                queue.add(neighbor);
             }
-            System.out.printf("In the queue:");
-            for (Cell c : queue){
-               System.out.print(c.toString());
-            }
-            System.out.println();
          }
       }
 
       long totalTime = System.nanoTime() - startTime;
       graph.setDistances();
-      getKValue(graph.getDistances());
-
-      int kValue = graph.cellDistance(graph.getStart(), graph.getGoal());
+      int kValue = getKValue(graph.getDistances());
       if (kValue < 0){
          solution = new Solution(kValue, totalTime);
       } else {
@@ -121,7 +126,7 @@ public class Algorithms {
          randjumps = ran.nextInt((numberOfJumps - 1) + 1) + 1; // find a way to reduce code
       }
 
-      newGraph.findCell(randomIndex).setNumberOfJumps(randjumps);// updates number of jumps
+      randCell.setNumberOfJumps(randjumps);// updates number of jumps
       newGraph.deleteNeighbors(randCell); // erases old neighbors
       newGraph.findNeighbors(randCell);
       //newGraph.showNeighbors(randCell);
@@ -176,16 +181,25 @@ public class Algorithms {
 
       int[] valueOfIterations = new int[iterations + 1];
       valueOfIterations[0] = k;
-      Graph curGraph = graph;
+      Graph curGraph = new Graph(graph);
       int currentK = k;
 
       for (int i = 1; i <= iterations; i++){
+         System.out.print("iteration " + i + ": ");
          Graph newGraph = HillClimbingHelp(curGraph);
          Solution solution = BFS(newGraph);
          int newK = solution.getK();
-         if (newK <= currentK){
-            currentK = newK;
-            curGraph = newGraph;
+         System.out.printf("current is %d and new is %d\n", currentK, newK);
+         if (currentK > 0) {
+            if (newK <= currentK && newK > 0){
+               currentK = newK;
+               curGraph = newGraph;
+            }
+         } else {
+            if (newK >= currentK){
+               currentK = newK;
+               curGraph = newGraph;
+            }
          }
          valueOfIterations[i] = newK;
       }
