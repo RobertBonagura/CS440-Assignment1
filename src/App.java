@@ -32,7 +32,10 @@ public class App {
 
         int iterations = 5;
         System.out.println("BFS search on result of HillClimbing");
-        Graph hillGraph = Algorithms.HillClimbing(graph, solution.getK(), iterations);
+        Graph hillGraph = new Graph(Algorithms.HillClimbing(graph, solution.getK(), iterations));
+        GUI gui2 = new GUI() ;
+        gui2.run(hillGraph);
+
         Solution solution2 = Algorithms.BFS(hillGraph);
         System.out.println(solution2);
 

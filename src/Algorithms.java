@@ -103,9 +103,7 @@ public class Algorithms {
    }
 
    public static Graph HillClimbingHelp(Graph graph){
-      int n = graph.getN();
       Graph newGraph = new Graph(graph);
-
       int randomIndex = (int )(Math.random() * graph.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
       Cell randCell = newGraph.findCell(randomIndex);
 
@@ -125,6 +123,7 @@ public class Algorithms {
       while(randjumps == randCell.getNumberOfJumps()){
          randjumps = ran.nextInt((numberOfJumps - 1) + 1) + 1; // find a way to reduce code
       }
+      System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, randjumps);
 
       randCell.setNumberOfJumps(randjumps);// updates number of jumps
       newGraph.deleteNeighbors(randCell); // erases old neighbors
@@ -132,11 +131,12 @@ public class Algorithms {
       //newGraph.showNeighbors(randCell);
 
       // Now replace setPrev and visited !!!!!!!!!!!!!!!!!!!!!!
+      /* Commented this out bc added to beginning of BFS and A* Search methods
       for(int i = 0 ; i < n*n ; i++){
          newGraph.findCell(i).setPrev(null);
          newGraph.findCell(i).setVisited(false);
       }
-
+      */
       return newGraph;
 
    }
@@ -192,11 +192,13 @@ public class Algorithms {
          System.out.printf("current is %d and new is %d\n", currentK, newK);
          if (currentK > 0) {
             if (newK <= currentK && newK > 0){
+               System.out.printf("Replacing %d with %d\n", currentK, newK);
                currentK = newK;
                curGraph = newGraph;
             }
          } else {
             if (newK >= currentK){
+               System.out.printf("Replacing %d with %d\n", currentK, newK);
                currentK = newK;
                curGraph = newGraph;
             }

@@ -31,7 +31,7 @@ class Graph {
       this.cells = graph.getCells();
       this.start = graph.getStart();
       this.goal = graph.getGoal();
-      //this.distances = graph.getDistances();
+      this.distances = graph.getDistances();
    }
 
    /**
