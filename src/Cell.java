@@ -26,6 +26,12 @@ public class Cell{
       this.numberOfJumps = numberOfJumps;
    }
 
+   public Cell(Cell cell) {
+      this.r = cell.getR();
+      this.c = cell.getC();
+      this.numberOfJumps = cell.getNumberOfJumps();
+   }
+
    public int getR() {
       return r;
    }
