@@ -63,7 +63,7 @@ class Graph {
       int numberOfJumps = Math.max(rJumps, cJumps);
       numberOfJumps = genRandNumber(numberOfJumps);
 
-      System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, numberOfJumps);
+      //System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, numberOfJumps);
 
       randCell.setNumberOfJumps(numberOfJumps);// updates number of jumps
       this.deleteNeighbors(randCell); // erases old neighbors
@@ -299,12 +299,12 @@ class Graph {
    }
 
    public int heuristic(Cell cell){
-     if (cell.getR() == n && cell.getC() == n){
-        return 2;
-     } else if (cell.getR() == n || cell.getC() == n){
+     if (cell.getR() == n-1 && cell.getC() == n-1){
+        return 0;
+     } else if (cell.getR() == n-1 || cell.getC() == n-1){
         return 1;
      } else {
-        return 0;
+        return 2;
      }
    }
 

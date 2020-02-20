@@ -57,6 +57,57 @@ public class Algorithms {
       return solution;
    }
 
+   /**
+    * Shortest Path First algorithm.
+    * Adds nodes to PriorityQueue based on distance from start cell.
+    * @param graph to search
+    * @return number of moves to Goal state.
+    */
+   public static Solution SPF(Graph graph){
+
+      int numberOfCells = graph.getNumberOfCells();
+      for(int i = 0 ; i < numberOfCells ; i++){
+         graph.findCell(i).setPrev(null);
+         graph.findCell(i).setVisited(false);
+      }
+
+      Solution solution;
+      PriorityQueue<Cell> queue = new PriorityQueue<>(new TotalPath(graph));
+      Cell cell = graph.getStart();
+
+      long startTime = System.nanoTime();
+      cell.visit();
+      queue.add(cell);
+      while (queue.size() != 0) {
+         cell = queue.remove();
+         if (cell.getNumberOfJumps() == 0){
+            break;
+         }
+         LinkedList<Cell> neighbors = cell.getNeighbors();
+         for (int i = 0; i < neighbors.size(); i++){
+            Cell neighbor = neighbors.get(i);
+            if (neighbor.isVisited() == false){
+               neighbor.visit();
+               neighbor.setPrev(cell);
+               queue.add(neighbor);
+            }
+         }
+      }
+      long totalTime = System.nanoTime() - startTime;
+
+      graph.setDistances();
+      int kValue = getKValue(graph.getDistances());
+
+      if (kValue < 0){
+         solution = new Solution(kValue, totalTime);
+      } else {
+         LinkedList<Cell> pathToSolution = generateSolutionPath(graph);
+         solution = new Solution(kValue, pathToSolution, totalTime);
+      }
+
+      return solution;
+   }
+
    public static Solution AStarSearch(Graph graph){
 
       int numberOfCells = graph.getNumberOfCells();
@@ -140,36 +191,32 @@ public class Algorithms {
    }
 
 
-   public static Graph HillClimbing(Graph graph, int k, int iterations) {
+   public static HillClimbingResult HillClimbing(Graph graph,
+                                                 Solution solution,
+                                                 int iterations) {
 
-      int[] valueOfIterations = new int[iterations + 1];
-      valueOfIterations[0] = k;
       Graph curGraph = new Graph(graph);
-      int currentK = k;
+      Solution[] solutions = new Solution[iterations + 1];
+      solutions[0] = solution;
+      int currentK = solution.getK();
+      int solutionKept = 0;
 
       for (int i = 1; i <= iterations; i++){
-         System.out.print("iteration " + i + ": ");
          Graph newGraph = new Graph(curGraph);
          newGraph.changeOneRandomCell();
-         Solution solution = BFS(newGraph);
-         int newK = solution.getK();
-         System.out.printf("current is %d and new is %d\n", currentK, newK);
-         if (currentK > 0) {
-            if (newK <= currentK && newK > 0){
-               System.out.printf("Replacing %d with %d\n", currentK, newK);
-               currentK = newK;
-               curGraph = new Graph(newGraph);
-            }
-         } else {
-            if (newK >= currentK){
-               System.out.printf("Replacing %d with %d\n", currentK, newK);
-               currentK = newK;
-               curGraph = new Graph(newGraph);
-            }
+         Solution newSolution = BFS(newGraph);
+         int newK = newSolution.getK();
+         if (newK >= currentK){
+            currentK = newK;
+            curGraph = new Graph(newGraph);
+            solutionKept = i;
          }
-         valueOfIterations[i] = newK;
+         solutions[i] = newSolution;
       }
-      return curGraph;
+
+      HillClimbingResult result = new HillClimbingResult(curGraph, solutions,
+              solutionKept);
+      return result;
 
    }
 
