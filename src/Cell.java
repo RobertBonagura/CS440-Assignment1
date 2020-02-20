@@ -26,6 +26,10 @@ public class Cell{
       this.numberOfJumps = numberOfJumps;
    }
 
+   /**
+    * Copy constructor
+    * @param cell
+    */
    public Cell(Cell cell) {
       this.r = cell.getR();
       this.c = cell.getC();
