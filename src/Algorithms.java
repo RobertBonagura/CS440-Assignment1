@@ -14,17 +14,12 @@ public class Algorithms {
     */
    public static Solution BFS(Graph graph){
 
-      int numberOfCells = graph.getNumberOfCells();
-      for(int i = 0 ; i < numberOfCells ; i++){
-         graph.findCell(i).setPrev(null);
-         graph.findCell(i).setVisited(false);
-      }
-
       Solution solution;
+      graph.cleanGraph();
       LinkedList<Cell> queue = new LinkedList<>();
-      Cell cell = graph.getStart();
 
       long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
       cell.visit();
       queue.add(cell);
       while (queue.size() != 0) {
@@ -43,10 +38,9 @@ public class Algorithms {
          }
       }
       long totalTime = System.nanoTime() - startTime;
-
       graph.setDistances();
-      int kValue = getKValue(graph.getDistances());
 
+      int kValue = getKValue(graph.getDistances());
       if (kValue < 0){
          solution = new Solution(kValue, totalTime);
       } else {
@@ -65,17 +59,12 @@ public class Algorithms {
     */
    public static Solution SPF(Graph graph){
 
-      int numberOfCells = graph.getNumberOfCells();
-      for(int i = 0 ; i < numberOfCells ; i++){
-         graph.findCell(i).setPrev(null);
-         graph.findCell(i).setVisited(false);
-      }
-
       Solution solution;
+      graph.cleanGraph();
       PriorityQueue<Cell> queue = new PriorityQueue<>(new TotalPath(graph));
-      Cell cell = graph.getStart();
 
       long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
       cell.visit();
       queue.add(cell);
       while (queue.size() != 0) {
@@ -94,10 +83,9 @@ public class Algorithms {
          }
       }
       long totalTime = System.nanoTime() - startTime;
-
       graph.setDistances();
-      int kValue = getKValue(graph.getDistances());
 
+      int kValue = getKValue(graph.getDistances());
       if (kValue < 0){
          solution = new Solution(kValue, totalTime);
       } else {
@@ -110,17 +98,12 @@ public class Algorithms {
 
    public static Solution AStarSearch(Graph graph){
 
-      int numberOfCells = graph.getNumberOfCells();
-      for(int i = 0 ; i < numberOfCells ; i++){
-         graph.findCell(i).setPrev(null);
-         graph.findCell(i).setVisited(false);
-      }
-
       Solution solution;
+      graph.cleanGraph();
       PriorityQueue<Cell> queue = new PriorityQueue<>(new Heuristic(graph));
-      Cell cell = graph.getStart();
 
       long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
       cell.visit();
       queue.add(cell);
       while (queue.size() != 0) {
@@ -138,9 +121,9 @@ public class Algorithms {
             }
          }
       }
-
       long totalTime = System.nanoTime() - startTime;
       graph.setDistances();
+
       int kValue = getKValue(graph.getDistances());
       if (kValue < 0){
          solution = new Solution(kValue, totalTime);

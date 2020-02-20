@@ -321,6 +321,13 @@ class Graph {
    }
 
 
+   public void cleanGraph() {
+      int numberOfCells = this.getNumberOfCells();
+      for(int i = 0 ; i < numberOfCells ; i++){
+         this.findCell(i).setPrev(null);
+         this.findCell(i).setVisited(false);
+      }
+   }
 }
 
 
