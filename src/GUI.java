@@ -17,9 +17,9 @@ public class GUI {
      * Each button displays the number of jumps that cell can make.
      * @param graph the puzzle is modeled after.
      */
-    public static void run (Graph graph) {
+    public static void run (Graph graph, String name) {
 
-        f = new JFrame();
+        f = new JFrame(name);
         int n = graph.getN();
         int numberOfButtons = graph.getNumberOfCells();
         ArrayList<JButton> buttons = new ArrayList<>(numberOfButtons);
