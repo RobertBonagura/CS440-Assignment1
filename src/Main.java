@@ -5,11 +5,11 @@ public class Main {
    public static void main(String[] args) {
 
       Task3();
-
+      Task4();
    }
 
    /**
-    * Task 3 Driver Method
+    * Task 3 Driver Method.
     */
    private static void Task3() {
 
@@ -18,6 +18,12 @@ public class Main {
          createPuzzle(puzzleSize, true);
          createPuzzle(puzzleSize, false);
       }
+   }
+
+   /**
+    * Task 4 Driver Method.
+    */
+   private static void Task4() {
    }
 
    /**
@@ -43,15 +49,16 @@ public class Main {
 
       GUI gui = new GUI();
       String sizeAsStr = Integer.toString(puzzleSize);
+      String kStr = Integer.toString(solution.getK());
       String name = hasSolution ?
-              "Task 3a: " + sizeAsStr + "-by-" + sizeAsStr :
-              "Task 3b: " + sizeAsStr + "-by-" + sizeAsStr;
+              "Task 3a: " + sizeAsStr + "x" + sizeAsStr :
+              "Task 3b: " + sizeAsStr + "x" + sizeAsStr;
       gui.run(graph, name);
 
       int[] distancePerCell = graph.getDistances();
       GUI numberOfMovesGUI = new GUI();
       numberOfMovesGUI.createNumberOfMovesGUI(puzzleSize, distancePerCell,
-              name + " Solution");
+              name + " = " + kStr);
    }
 
 }
