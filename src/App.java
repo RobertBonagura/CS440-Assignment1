@@ -49,14 +49,12 @@ public class App {
                         "difficult %s-by-%s puzzle...\n", n, n);
         HillClimbingResult hillResult = Algorithms.HillClimbing(graph,
                 solution, iterations);
-        Solution[] hillClimbingIterations = hillResult.getSolutions();
-        int indexOfSolution = hillResult.getSolutionIndex();
         Graph hillGraph = hillResult.getGraph();
         GUI gui2 = new GUI() ;
         gui2.run(hillGraph, "Puzzle Two");
 
         System.out.println("BFS search on result of HillClimbing");
-        Solution solution2 = hillClimbingIterations[indexOfSolution];
+        Solution solution2 = Algorithms.BFS(hillGraph);
         System.out.println(solution2);
 
         System.out.println("SPF search on original graph");

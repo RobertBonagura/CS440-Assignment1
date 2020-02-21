@@ -317,6 +317,9 @@ class Graph {
    }
 
    public int[] getDistances(){
+      if (this.distances == null){
+         this.setDistances();
+      }
       return this.distances;
    }
 

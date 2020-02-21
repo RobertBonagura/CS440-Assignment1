@@ -173,18 +173,26 @@ public class Algorithms {
       return pathToSolution;
    }
 
-
+   /**
+    *
+    * @param graph
+    * @param solution
+    * @param iterations
+    * @return
+    */
    public static HillClimbingResult HillClimbing(Graph graph,
                                                  Solution solution,
                                                  int iterations) {
-
       Graph curGraph = new Graph(graph);
-      Solution[] solutions = new Solution[iterations + 1];
-      solutions[0] = solution;
+      int[] kValues = new int[iterations];
+      double[] times_ms = new double[iterations];
       int currentK = solution.getK();
-      int solutionKept = 0;
 
-      for (int i = 1; i <= iterations; i++){
+      long bestTime_ns, totalTime_ns;
+      bestTime_ns = totalTime_ns = System.nanoTime();
+      int chosenIndex = 0;
+      for (int i = 0; i < iterations; i++){
+         long startTime_ns = System.nanoTime();
          Graph newGraph = new Graph(curGraph);
          newGraph.changeOneRandomCell();
          Solution newSolution = BFS(newGraph);
@@ -192,13 +200,16 @@ public class Algorithms {
          if (newK >= currentK){
             currentK = newK;
             curGraph = new Graph(newGraph);
-            solutionKept = i;
+            chosenIndex = i;
          }
-         solutions[i] = newSolution;
+         kValues[i] = newK;
+         long iterationTime_ns = (System.nanoTime() - startTime_ns);
+         times_ms[i] = (iterationTime_ns / Math.pow(10,6));
       }
 
-      HillClimbingResult result = new HillClimbingResult(curGraph, solutions,
-              solutionKept);
+      HillClimbingResult result = new HillClimbingResult(curGraph, kValues,
+              chosenIndex, times_ms);
+
       return result;
 
    }

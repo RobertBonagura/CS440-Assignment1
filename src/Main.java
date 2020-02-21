@@ -15,8 +15,8 @@ public class Main {
 
       int[] puzzleSizes = new int[]{5, 7, 9, 11};
       for (int puzzleSize : puzzleSizes){
-         createPuzzle(puzzleSize, true);
-         createPuzzle(puzzleSize, false);
+         createT3Puzzles(puzzleSize, true);
+         createT3Puzzles(puzzleSize, false);
       }
    }
 
@@ -24,6 +24,48 @@ public class Main {
     * Task 4 Driver Method.
     */
    private static void Task4() {
+
+      int[] puzzleSizes = new int[]{5, 7, 9, 11};
+      int hillIterations = 100;
+      int task4Iterations = 100;
+      Graph graph;
+      Graph maxGraph = null;
+      Solution solution;
+      double maxGraphTime_ms = 0;
+
+      for (int puzzleSize : puzzleSizes){
+         double avgTimes_ms = 0;
+         int maxK = 0;
+         for (int i = 0; i < task4Iterations; i++) {
+            graph = new Graph(puzzleSize);
+            graph.populateGraph();
+            graph.populateNeighbors();
+            solution = Algorithms.BFS(graph);
+            HillClimbingResult hillResult = Algorithms.HillClimbing(graph,
+                    solution, hillIterations);
+            avgTimes_ms += hillResult.getAvgTimeMs();
+            if (hillResult.getK() > maxK) {
+               maxK = hillResult.getK();
+               maxGraph = hillResult.getGraph();
+               maxGraphTime_ms = hillResult.getTimeMs();
+            }
+         }
+         //plotHillClimb(hillResult);
+         double avgTime_ms = avgTimes_ms / task4Iterations;
+         System.out.printf("The average Hill Climbing runtime on a %sx%s with %s " +
+                 "iterations is %.4f ms\n", puzzleSize, puzzleSize,
+                 hillIterations, avgTime_ms);
+      }
+
+      GUI gui = new GUI();
+      gui.run(maxGraph, "Max Difficulty Graph");
+      int[] distancePerCell = maxGraph.getDistances();
+      GUI numberOfMovesGUI = new GUI();
+      numberOfMovesGUI.createNumberOfMovesGUI(maxGraph.getN(),
+              distancePerCell, "Max Graph Solution");
+      System.out.printf("\nThe Max Difficulty graph was found in %.4f ms\n",
+              maxGraphTime_ms);
+
    }
 
    /**
@@ -35,7 +77,7 @@ public class Main {
     * @param puzzleSize
     * @param hasSolution
     */
-   private static void createPuzzle(int puzzleSize, boolean hasSolution) {
+   private static void createT3Puzzles(int puzzleSize, boolean hasSolution) {
 
       Solution solution;
       Graph graph;

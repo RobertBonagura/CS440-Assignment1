@@ -50,4 +50,9 @@ public class Solution {
    public int getK(){
       return this.k;
    }
+
+   public long getTime(){
+      return this.time;
+   }
 }
+
