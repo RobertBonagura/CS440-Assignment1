@@ -5,8 +5,11 @@ public class Main {
    public static void main(String[] args) {
 
       Task3();
-      Task4();
+      Graph difficultGraph = Task4();
+      Task5(difficultGraph);
    }
+
+
 
    /**
     * Task 3 Driver Method.
@@ -23,14 +26,14 @@ public class Main {
    /**
     * Task 4 Driver Method.
     */
-   private static void Task4() {
+   private static Graph Task4() {
 
       int[] puzzleSizes = new int[]{5, 7, 9, 11};
       int hillIterations = 100;
       int task4Iterations = 100;
       Graph graph;
       Graph maxGraph = null;
-      Solution solution;
+      Solution solution = null;
       double maxGraphTime_ms = 0;
 
       for (int puzzleSize : puzzleSizes){
@@ -63,10 +66,25 @@ public class Main {
       GUI numberOfMovesGUI = new GUI();
       numberOfMovesGUI.createNumberOfMovesGUI(maxGraph.getN(),
               distancePerCell, "Max Graph Solution");
-      System.out.printf("\nThe Max Difficulty graph was found in %.4f ms\n",
+      System.out.printf("\nThe Max Difficulty graph was found in %.4f ms\n\n",
               maxGraphTime_ms);
+      Solution difficultSolution = Algorithms.BFS(maxGraph);
+      System.out.println("The result of BFS on difficult graph");
+      System.out.println(difficultSolution);
+
+      return maxGraph;
 
    }
+
+
+   private static void Task5(Graph difficultGraph) {
+
+      Graph graph = new Graph(difficultGraph);
+      Solution solution = Algorithms.SPF(graph);
+      System.out.println("The result of SPF on difficult graph");
+      System.out.println(solution);
+   }
+
 
    /**
     * Creates puzzles for Task 3
