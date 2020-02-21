@@ -7,7 +7,10 @@ public class Main {
       Task3();
       Graph difficultGraph = Task4();
       Task5(difficultGraph);
+      Task6(difficultGraph);
+
    }
+
 
 
 
@@ -85,6 +88,13 @@ public class Main {
       System.out.println(solution);
    }
 
+   private static void Task6(Graph difficultGraph) {
+      Graph graph = new Graph(difficultGraph);
+      Solution solution = Algorithms.AStarSearch(graph);
+      System.out.println("The result of A* on difficult graph");
+      System.out.println(solution);
+
+   }
 
    /**
     * Creates puzzles for Task 3
