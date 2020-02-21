@@ -8,9 +8,8 @@ public class Main {
       Graph difficultGraph = Task4();
       Task5(difficultGraph);
       Task6(difficultGraph);
-
+      Task9();
    }
-
 
 
 
@@ -95,6 +94,39 @@ public class Main {
       System.out.println(solution);
 
    }
+
+   private static void Task9() {
+
+      int n = 100;
+      Graph graph = new Graph(n);
+      graph.populateGraph(); // binds numbers of jumps to graph
+      graph.populateNeighbors();
+
+      Solution solution = Algorithms.BFS(graph);
+      int iterations = 100;
+      System.out.printf("Performing Hill Climbing algorithm to create a " +
+              "difficult %s-by-%s puzzle...\n", n, n);
+      HillClimbingResult hillResult = Algorithms.HillClimbing(graph,
+              solution, iterations);
+      Graph hillGraph = hillResult.getGraph();
+
+      GUI gui = new GUI();
+      gui.run(hillGraph, "Super Crazy Difficult Puzzle worthy of extra credit");
+
+      System.out.println("BFS search on result of HillClimbing");
+      Solution solution2 = Algorithms.BFS(hillGraph);
+      System.out.println(solution2);
+
+      System.out.println("SPF search on result of HillClimbing");
+      Solution solution4 = Algorithms.SPF(hillGraph);
+      System.out.println(solution4);
+
+
+      System.out.println("A* search on result of HillClimbing");
+      Solution solution6 = Algorithms.AStarSearch(hillGraph);
+      System.out.println(solution6);
+   }
+
 
    /**
     * Creates puzzles for Task 3
