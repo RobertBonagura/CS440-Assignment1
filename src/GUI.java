@@ -59,9 +59,10 @@ public class GUI {
      * @param the dimension of the grid.
      * @param the corresponding values for each cell.
      */
-    public static void createNumberOfMovesGUI(int n, int[] values){
+    public static void createNumberOfMovesGUI(int n, int[] values,
+                                              String name){
 
-        f = new JFrame();
+        f = new JFrame(name);
         int numberOfButtons = n*n;
         ArrayList<JButton> buttons = new ArrayList<>(numberOfButtons);
 
