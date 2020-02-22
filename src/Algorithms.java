@@ -237,8 +237,8 @@ public class Algorithms {
    
    
    public static Graph Genetic(int n, int population){
-	   
-	   int generations = 1;
+	   if(population > 1){
+	   int generations = 100;
 	   // initial population
 	   Graph [] intialPopulation = new Graph[population];
 	   
@@ -249,7 +249,7 @@ public class Algorithms {
 		   intialPopulation[i].setDistances();
 	       Solution newSolution = BFS(intialPopulation[i]);
 	         int newK = newSolution.getK();
-		   System.out.println("   PART 1 K = "+ newK + "\n" + newSolution.toString());
+		   System.out.println("   Puzzle #"+ i+ "\n" + newSolution.toString());
 		   intialPopulation[i].cleanGraph();
 		   
 	   }
@@ -260,16 +260,8 @@ public class Algorithms {
        gui1.run(intialPopulation[1], "graph 1");
  */      
 	   Arrays.sort(intialPopulation, new GenAlgoComparator());  
-   
-	   boolean even = (population%2 == 0); //even coupling, else: drop last one
-	   if(!even){
-		   Arrays.copyOf(intialPopulation, intialPopulation.length-1); // make it even		
-//NEED CLEANSING?
-		   }
-	   	   
-	   
+
 	   Graph [] CrossOvers =  genCross(intialPopulation);
-	   
 	
 		   
 // MUTATION make it 90 percent?
@@ -289,21 +281,15 @@ public class Algorithms {
 				   mutatedGraphs[i] = new Graph(CrossOvers[i]);
 			   }
 			   mutatedGraphs[i].cleanGraph();
-			   if(i == 0){
-			       Solution s = BFS(mutatedGraphs[0]);
+
+			   
+			       Solution s = BFS(mutatedGraphs[i]);
 			         int newK = s.getK();
-				   System.out.println("  After Mutation, graph0: "+  "\n" + s.toString());
-				   mutatedGraphs[0].cleanGraph();
-				  //GUI gui7 = new GUI() ;
-			      //gui7.run(mutatedGraphs[i], "Mutated 0");
-			   }else{
-			       Solution s = BFS(mutatedGraphs[1]);
-			         int newK = s.getK();
-				   System.out.println("  After Mutation, graph1: "+ "\n" + s.toString());
-				   mutatedGraphs[1].cleanGraph();
+				   System.out.println("  After Mutation, graph#" +i + "\n" + s.toString());
+				   mutatedGraphs[i].cleanGraph();
 				  // GUI gui8 = new GUI() ;
 				  //gui8.run(mutatedGraphs[i], "Mutated 1");
-			   }
+			   
 			   
 		   }
 	      
@@ -315,19 +301,31 @@ public class Algorithms {
 		   mutatedGraphs[0].cleanGraph();
 		   
 		   return mutatedGraphs[0];
+		   
+	   }else{
+		   System.out.println("Enter at least a population of 2 or more.");
+		   return null;
+	   }
 	   }
    
  
    
    
    public static Graph[] genCross( Graph[] intialPopulation){
+	   boolean even = (intialPopulation.length%2 == 0);
+	   
 	   for(Graph g : intialPopulation){
 		   g.cleanGraph();
 	   }
 	   
-	   Graph [] CrossOvers = new Graph[intialPopulation.length];
 	   
-	   for(int i = 0; i < intialPopulation.length - 1; i+=2){ // selection
+	   int max;
+	   if(even){max =intialPopulation.length; }
+	   else		{ max = intialPopulation.length -1;} //drop the one with the lowest fitness
+	   
+	   Graph [] CrossOvers = new Graph[max];
+
+	   for(int i = 0; i < max ; i+=2){ // selection
 			   Graph parent1 = intialPopulation[i];
 			   Graph parent2 = intialPopulation[i+1];
 			   CrossOvers[i] = new Graph(GeneticCrossOver( parent1, parent2));
