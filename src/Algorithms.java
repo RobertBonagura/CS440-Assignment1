@@ -1,238 +1,395 @@
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Random;
+//import sun.awt.image.ImageWatched;
+
+import java.util.*;
 
 /**
  * Class used to hold all of the algorithms.
  */
 public class Algorithms {
+
    /**
     * Breadth First Search algorithm
     * @param graph to search
-    * @return value of the puzzle.
+    * @return number of moves to Goal state.
     */
-   public static int[] BFS(Graph graph){
-	   System.out.println("BFS called");
+   public static Solution BFS(Graph graph){
 
+      Solution solution;
+      graph.cleanGraph();
       LinkedList<Cell> queue = new LinkedList<>();
-      
-      Cell cell = graph.getStart();
 
-      int numCells = graph.getN()*graph.getN();
-       int BFSdistance[] = new int[numCells];
-      Arrays.fill(BFSdistance, 0);
-      
-      
+      long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
       cell.visit();
       queue.add(cell);
       while (queue.size() != 0) {
          cell = queue.remove();
-
-         if(!cell.equals(graph.getGoal())){
+         if (cell.getNumberOfJumps() == 0){
+            break;
+         }
          LinkedList<Cell> neighbors = cell.getNeighbors();
-         
-         if (!(cell.getNeighbors() == null)){
-        	 for (int i = 0; i < neighbors.size(); i++){
-                 Cell neighbor = neighbors.get(i);
-                 if (neighbor.isVisited() == false){
-                    neighbor.visit();
-                    neighbor.setPrev(cell);
-                    queue.add(neighbor);
-                 }
-              } 
+         for (int i = 0; i < neighbors.size(); i++){
+            Cell neighbor = neighbors.get(i);
+            if (neighbor.isVisited() == false){
+               neighbor.visit();
+               neighbor.setPrev(cell);
+               queue.add(neighbor);
+            }
          }
       }
-         
+      long totalTime = System.nanoTime() - startTime;
+      graph.setDistances();
+
+      int kValue = getKValue(graph.getDistances());
+      if (kValue < 0){
+         solution = new Solution(kValue, totalTime);
+      } else {
+         LinkedList<Cell> pathToSolution = generateSolutionPath(graph);
+         solution = new Solution(kValue, pathToSolution, totalTime);
       }
 
- 
-      for(Cell c : graph.getCells()){
-    	  int index = graph.getIndex(c);
-    	  	Cell currentCell = c;
-    	  if(!currentCell.equals(graph.getStart())){
-    		  
-	    	  if(currentCell.getPrev() == null ){
-	    		  BFSdistance[index] = -1;
-	    	  }else{
-		    	  while(currentCell.getPrev() != null){
-		    		  BFSdistance[index]++;
-		    		  currentCell = currentCell.getPrev();
-		    	  }
-	    	  }
-    	  	}
+      return solution;
+   }
+
+   /**
+    * Shortest Path First algorithm.
+    * Adds nodes to PriorityQueue based on distance from start cell.
+    * @param graph to search
+    * @return number of moves to Goal state.
+    */
+   public static Solution SPF(Graph graph){
+
+      Solution solution;
+      graph.cleanGraph();
+      PriorityQueue<Cell> queue = new PriorityQueue<>(new TotalPath(graph));
+
+      long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
+      cell.visit();
+      queue.add(cell);
+      while (queue.size() != 0) {
+         cell = queue.remove();
+         if (cell.getNumberOfJumps() == 0){
+            break;
+         }
+         LinkedList<Cell> neighbors = cell.getNeighbors();
+         for (int i = 0; i < neighbors.size(); i++){
+            Cell neighbor = neighbors.get(i);
+            if (neighbor.isVisited() == false){
+               neighbor.visit();
+               neighbor.setPrev(cell);
+               queue.add(neighbor);
+            }
+         }
       }
-    
-/*      for(int i=0; i < BFSdistance.length; i++){
-    	  System.out.println("Distance at index " + i + " = " + BFSdistance[i]);
+      long totalTime = System.nanoTime() - startTime;
+      graph.setDistances();
+
+      int kValue = getKValue(graph.getDistances());
+      if (kValue < 0){
+         solution = new Solution(kValue, totalTime);
+      } else {
+         LinkedList<Cell> pathToSolution = generateSolutionPath(graph);
+         solution = new Solution(kValue, pathToSolution, totalTime);
       }
-*/      
-      return BFSdistance;
+
+      return solution;
+   }
+
+   public static Solution AStarSearch(Graph graph){
+
+      Solution solution;
+      graph.cleanGraph();
+      PriorityQueue<Cell> queue = new PriorityQueue<>(new Heuristic(graph)); // comparator
+
+      long startTime = System.nanoTime();
+      Cell cell = graph.getStart();
+      cell.visit();
+      queue.add(cell);
+      while (queue.size() != 0) {
+         cell = queue.remove();
+         if (cell.getNumberOfJumps() == 0){
+            break;
+         }
+         LinkedList<Cell> neighbors = cell.getNeighbors();
+         for (int i = 0; i < neighbors.size(); i++){
+            Cell neighbor = neighbors.get(i);
+            if (neighbor.isVisited() == false){
+               neighbor.visit();
+               neighbor.setPrev(cell);
+               queue.add(neighbor);
+            }
+         }
+      }
+      long totalTime = System.nanoTime() - startTime;
+      graph.setDistances();
+
+      int kValue = getKValue(graph.getDistances());
+      if (kValue < 0){
+         solution = new Solution(kValue, totalTime);
+      } else {
+         LinkedList<Cell> pathToSolution = generateSolutionPath(graph);
+         solution = new Solution(kValue, pathToSolution, totalTime);
+      }
+
+      return solution;
+
    }
    
-   
-   
-   
-   
-/**
- * @param array of distances from origin to every cell
- * @return k value of the puzzle
- * */
-   public static int getPuzzleValue(int [] BFSdistance){
-	    int puzzleValue = BFSdistance[ BFSdistance.length -1 ]; // get goal Value
-	      if (puzzleValue == -1){
-	    	  int count = 0;
-	    	  for(int distance: BFSdistance){
-	    		  if(distance == -1){
-	    			  count++;
-	    		  }
-	    	  }
-	    	  puzzleValue = -1*count;
-	      }
-	      return puzzleValue;
+
+
+
+   private static int getKValue(int[] distances) {
+      int kValue = distances[distances.length -1 ]; // get goal Value
+      if (kValue == -1){
+         int numberUnreachableCells = 0;
+         for(int distance: distances){
+            if(distance == -1){
+               numberUnreachableCells++;
+            }
+         }
+         kValue = -1*numberUnreachableCells;
+      }
+      return kValue;
+
    }
-   
-   
-   
-   
 
-  /**HillClimbingHelp duplicates the graph but changes 1 cell (and its properties) 
-   * @param graph input
-   * @return the new changed graph
-   * */ 
-  
-   
-   public static Graph HillClimbingHelp(Graph graph){
-	   int n = graph.n;
-	   
-	   Graph currentGraph  = graph; // MAKE copy
-	   
+   private static LinkedList<Cell> generateSolutionPath(Graph graph) {
+      LinkedList<Cell> pathToSolution = new LinkedList<Cell>();
+      Cell start = graph.getStart();
+      Cell goal = graph.getGoal();
+      Cell cell = goal;
 
-		   int randomIndex = (int )(Math.random() * graph.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
-		   
-		   Cell randCell = currentGraph.getCellAt(randomIndex);
-		   
-		      int R_MIN, R_MAX, C_MIN, C_MAX;
-		      R_MIN = C_MIN = 1;
-		      R_MAX = C_MAX = graph.n;
-		      
-		      int r = randCell.getR() + 1;
-		      int c = randCell.getC() + 1;
-		      
-		      
-		   int rJumps = Math.max((R_MAX - r), (r - R_MIN));
-           int cJumps = Math.max((C_MAX - c), (c - C_MIN));
-           int numberOfJumps = Math.max(rJumps, cJumps);
-           Random ran = new Random();
-           int randjumps = randCell.getNumberOfJumps();
-           
-           while(randjumps == randCell.getNumberOfJumps()){
-        	   randjumps = ran.nextInt((numberOfJumps - 1) + 1) + 1; // find a way to reduce code
-           }
-          
-           currentGraph.getCellAt(randomIndex).setNumberOfJumps(randjumps);// updates number of jumps  
-           currentGraph.deleteNeighbors(randCell); // erases old neighbors  
-           
-           currentGraph.findNeighbors(randCell);
-           currentGraph.showNeighbors(randCell);
-
-           
-           // Now replace setPrev and visited !!!!!!!!!!!!!!!!!!!!!!
-           for(int i = 0 ; i< n*n ; i++){
-        	   currentGraph.getCellAt(i).setPrev(null);
-        	   currentGraph.getCellAt(i).setVisited(false);
-           }
-           
-	
-           return currentGraph;
-	   
+      int kValue = graph.cellDistance(start, goal);
+      if (kValue < 0){
+         return pathToSolution;
+      }
+      for (int i = 0; i < kValue; i++){
+         pathToSolution.addFirst(cell);
+         if (cell.getPrev() == null){
+            break;
+         }
+         cell = cell.getPrev();
+      }
+      return pathToSolution;
    }
-   
-   
-   
-   
-   /**ISSUE: outputs the right k value but finalGraph doesnt display the right graph!*/
-   
-   
-   
-   public static void HillClimbing(Graph graph, int puzzleValue, int iterations){
-	   GUI gui1 = new GUI(); // for testing
-	   GUI gui2 = new GUI(); // for testing
 
-	   
-	   int valueafterIteration[]= new int[iterations +1];
-	   valueafterIteration[0]= puzzleValue;
-	   
-	   int n = graph.getN();
-	   Graph lastGraph = HillClimbingHelp(graph); 
-	   Graph finalGraph = graph;
-	   int lastPuzzleValue = valueafterIteration[0];
-	   int newpuzzleValue = 0;
+   /**
+    *
+    * @param graph
+    * @param solution
+    * @param iterations
+    * @return
+    */
+   public static HillClimbingResult HillClimbing(Graph graph,
+                                                 Solution solution,
+                                                 int iterations) {
+      Graph curGraph = new Graph(graph);
+      int[] kValues = new int[iterations];
+      double[] times_ms = new double[iterations];
+      int currentK = solution.getK();
 
-	   System.out.println("#ITERATIONS  = " + iterations);
-	   
-	   for(int i = 1; i <= iterations; i++){
-		   int [] BFSvals = Algorithms.BFS(lastGraph); 
-		   newpuzzleValue = Algorithms.getPuzzleValue(BFSvals);  	   
-		   valueafterIteration[i]= newpuzzleValue; 
-		   
-		   System.out.println("				lastPuzzleValue= " + lastPuzzleValue);
-		   System.out.println("				newpuzzleValue= " + newpuzzleValue);
-		   
-		   
-		   
-		   if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ){
-			  System.out.println("ENTERED if(Math.abs(newpuzzleValue)  <= Math.abs(lastPuzzleValue) ");
-			  finalGraph = lastGraph; // why doesnt it work???
-			  System.out.println("final graph:");
-			  //finalGraph.show();
-			  int x = Algorithms.getPuzzleValue(Algorithms.BFS(finalGraph));
-			  System.out.println("k value of final graph = " + x);
-			   lastPuzzleValue = newpuzzleValue;	
-			   if(i+1 <= iterations){ // to save the last graph
-				//   System.out.println("ENTERED if(i+1 <= iterations)");
-				   lastGraph = HillClimbingHelp(lastGraph);
-			   }
-		   }
-		   
-		   // if this is last iteration and lastPuzzleValue is > newpuzzlevalue, save graph with lowest
+      long bestTime_ns, totalTime_ns;
+      bestTime_ns = totalTime_ns = System.nanoTime();
+      int chosenIndex = 0;
+      for (int i = 0; i < iterations; i++){
+         long startTime_ns = System.nanoTime();
+         Graph newGraph = new Graph(curGraph);
+         newGraph.changeOneRandomCell();
+         Solution newSolution = BFS(newGraph);
+         int newK = newSolution.getK();
+         if (newK >= currentK){
+            currentK = newK;
+            curGraph = new Graph(newGraph);
+            chosenIndex = i;
+         }
+         kValues[i] = newK;
+         long iterationTime_ns = (System.nanoTime() - startTime_ns);
+         times_ms[i] = (iterationTime_ns / Math.pow(10,6));
+      }
 
+      HillClimbingResult result = new HillClimbingResult(curGraph, kValues,
+              chosenIndex, times_ms);
+
+      return result;
+
+   }
+   /** 
+    * @param lastPoulation sorted array of objects (graphs) from previous population
+    * @return new population after Selection, Cross-over, and Mutation
+    */
+ /*  public static Graph[] GeneticHelp(Graph[] lastPoulation){
+	   Graph [] intialPopulation = lastPoulation;	   	
+   }
+
+   
+   
+   */
+   // genetic ALG
+  /**
+   * BUG: dummy and mutatedGraphs[0] should return the same answer but 
+   * mutatedGraphs[0] sometimes return something else
+   * @param n size of puzzle
+   * @param population : number of graphs in original population
+   * @return graph with highest k value after reaching a plateau
+   * 	  // how to define plateau? a delta value? an upper bound?a certain number of cycles?
+   */
+   
+   
+   public static Graph Genetic(int n, int population){
+	   
+	   int generations = 1;
+	   // initial population
+	   Graph [] intialPopulation = new Graph[population];
+	   
+	   for (int i = 0; i < population; i++){
+		   intialPopulation[i] = new Graph(n);
+		   intialPopulation[i].populateGraph(); 
+		   intialPopulation[i].populateNeighbors();
+		   intialPopulation[i].setDistances();
+	       Solution newSolution = BFS(intialPopulation[i]);
+	         int newK = newSolution.getK();
+		   System.out.println("   PART 1 K = "+ newK + "\n" + newSolution.toString());
+		   intialPopulation[i].cleanGraph();
 		   
 	   }
-	 
-	   
-	   
-	   
-	   gui1.run(finalGraph);
-	   int [] BFSdis = Algorithms.BFS(finalGraph);
-	   gui2.createSimpleGUI(n, BFSdis);
-/*	   
-	   // display:
-	   gui1.run(lastGraph);
-	   int newpuzzleValue = Algorithms.getPuzzleValue(Algorithms.BFS(lastGraph));  
-	   System.out.println("newpuzzleValue after " +iterations +" iterations is "+ lastPuzzleValue);
-	   int [] BFSdis = Algorithms.BFS(lastGraph);
-	   gui2.createSimpleGUI(n, BFSdis);
-	   
-	   Graph g3 = HillClimbingHelp(lastGraph);
-	   gui3.run(g3);
-	   int newpuzzleValue1 = Algorithms.getPuzzleValue(Algorithms.BFS(g3));  
-	   int [] BFSdis1 = Algorithms.BFS(lastGraph);
-	   gui3.createSimpleGUI(n, BFSdis);
-*/	   
-	   
-	  // Graph g = HillClimbingHelp(graph, 1);
-	   
-// FOR DISPLAY	   
-/*	   gui1.run(g);
-	   
-       int [] BFSdis = Algorithms.BFS(g);
-       int newpuzzleValue = Algorithms.getPuzzleValue(BFSdis);       
-       System.out.println("newpuzzleValue = " + newpuzzleValue);
-      
-	   	gui2.createSimpleGUI(n, BFSdis);
-*/	   
+ /*      GUI gui0 = new GUI() ;
+       gui0.run(intialPopulation[0], "graph 0");
+       
+       GUI gui1 = new GUI() ;
+       gui1.run(intialPopulation[1], "graph 1");
+ */      
+	   Arrays.sort(intialPopulation, new GenAlgoComparator());  
    
-	   System.out.println("After " + iterations +" iterations, the new k value is: "+ lastPuzzleValue);
-   }
+	   boolean even = (population%2 == 0); //even coupling, else: drop last one
+	   if(!even){
+		   Arrays.copyOf(intialPopulation, intialPopulation.length-1); // make it even		
+//NEED CLEANSING?
+		   }
+	   	   
+	   
+	   Graph [] CrossOvers =  genCross(intialPopulation);
+	   
+	
+		   
+// MUTATION make it 90 percent?
+		Graph [] mutatedGraphs = new Graph[CrossOvers.length];
+		   for(int i = 0; i < CrossOvers.length; i++){
+			   CrossOvers[i].cleanGraph();
+			   
+			   Random r = new Random();
+			   double randMutation = r.nextDouble();
+			   
+			   if (randMutation < 0.9){
+				   
+				   mutatedGraphs[i] = new Graph(CrossOvers[i]);
+				   mutatedGraphs[i].changeOneRandomCell();	
 
-}
+			   }else{
+				   mutatedGraphs[i] = new Graph(CrossOvers[i]);
+			   }
+			   mutatedGraphs[i].cleanGraph();
+			   if(i == 0){
+			       Solution s = BFS(mutatedGraphs[0]);
+			         int newK = s.getK();
+				   System.out.println("  After Mutation, graph0: "+  "\n" + s.toString());
+				   mutatedGraphs[0].cleanGraph();
+				  //GUI gui7 = new GUI() ;
+			      //gui7.run(mutatedGraphs[i], "Mutated 0");
+			   }else{
+			       Solution s = BFS(mutatedGraphs[1]);
+			         int newK = s.getK();
+				   System.out.println("  After Mutation, graph1: "+ "\n" + s.toString());
+				   mutatedGraphs[1].cleanGraph();
+				  // GUI gui8 = new GUI() ;
+				  //gui8.run(mutatedGraphs[i], "Mutated 1");
+			   }
+			   
+		   }
+	      
+		   		 
+	       Solution s = BFS(mutatedGraphs[0]);
+	         int newK = s.getK();
+		   System.out.println("  \n RETURNED K = "+ newK + "\n" + s.toString());
+		   mutatedGraphs[0].cleanGraph();
+		   
+		   return mutatedGraphs[0];
+	   }
+   
+ 
+   
+   
+   public static Graph[] genCross( Graph[] intialPopulation){
+	   for(Graph g : intialPopulation){
+		   g.cleanGraph();
+	   }
+	   
+	   Graph [] CrossOvers = new Graph[intialPopulation.length];
+	   
+	   for(int i = 0; i < intialPopulation.length - 1; i+=2){ // selection
+			   Graph parent1 = intialPopulation[i];
+			   Graph parent2 = intialPopulation[i+1];
+			   CrossOvers[i] = new Graph(GeneticCrossOver( parent1, parent2));
+			   CrossOvers[i].cleanGraph();
+			   CrossOvers[i+1] = new Graph(GeneticCrossOver( parent2, parent1));
+			   CrossOvers[i+1].cleanGraph();
+	}
+
+	   Arrays.sort(CrossOvers, new GenAlgoComparator());  
+
+/*	 //Elitism: always keep the first one and put it in the last index
+	   CrossOvers[intialPopulation.length -1 ] = new Graph(intialPopulation[0]);
+	   CrossOvers[intialPopulation.length -1 ].cleanGraph();
+	   //NO NEED to sort here!
+*/
+	   return CrossOvers;
+	
+   }
+   
+   
+   /**
+    * 
+    * @param  parent1
+    * @param  parent2
+    * @return graph with left half from g1 and right half from g2
+    */
+      public static Graph GeneticCrossOver(Graph parent1, Graph parent2){
+    	  parent1.cleanGraph();
+    	  parent2.cleanGraph();
+   	   int n = parent1.getN();
+   	   int half = n/2; // rounded down 
+   	   // just get all jump values then assemble graph? could be split horizontally! easier!
+   	   int[] jumpValues = new int[n*n];
+   	   int index = 0;
+   	   for(int i = 0; i <= half ; i++){// half rows
+   		   for(int j = 0; j < n ; j++){ //cols
+   			jumpValues[i*n + j] = parent1.findCell(i*n + j).getNumberOfJumps();
+    		   
+   		   }
+   	   }
+   	
+   	   for(int i = half + 1 ; i < n ; i++){// half rows
+   		   for(int j = 0; j < n ; j++){ //cols
+   			jumpValues[i*n + j] = parent2.findCell(i*n + j).getNumberOfJumps();
+   		   }
+   	   }
+
+   	
+   	   Graph crossedOverGraph = new Graph(n);
+   	   crossedOverGraph.populateGraph(jumpValues);
+   	   crossedOverGraph.populateNeighbors();
+   	   crossedOverGraph.setDistances();
+   	   crossedOverGraph.cleanGraph();
+   	   return crossedOverGraph;
+       
+ 	   
+      }
+    
+
+   }
+   
+
+
+   
+   
+

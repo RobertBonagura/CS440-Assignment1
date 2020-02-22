@@ -1,3 +1,6 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -6,9 +9,10 @@ import java.util.Random;
  * Uses an underlying array of Cells to represent each node.
  */
 class Graph {
-   public int n, numberOfCells;
+   private int n, numberOfCells;
    private Cell[] cells; //Adjacency Lists
    private Cell start, goal;
+   private int[] distances;
 
    /**
     * Creates a graph of size n-by-n.
@@ -21,6 +25,53 @@ class Graph {
       this.cells = new Cell[numberOfCells];
       this.start = cells[0];
       this.goal = cells[numberOfCells - 1];
+   }
+
+   Graph(Graph graph){
+      this.n = graph.getN();
+      this.numberOfCells = graph.getNumberOfCells();
+      this.cells = new Cell[numberOfCells];
+      Cell[] graphCells = graph.getCells();
+      for (int i = 0; i < numberOfCells; i++){
+         this.cells[i] = new Cell(graphCells[i]);
+      }
+      this.start = this.cells[0];
+      this.goal = this.cells[numberOfCells - 1];
+      this.findAndSetNeighbors();
+   }
+
+   
+   private void findAndSetNeighbors() {
+      for (int i = 0; i < this.numberOfCells; i++){
+         LinkedList<Cell> neighbors = this.findNeighbors(cells[i]);
+         this.cells[i].setNeighbors(neighbors);
+      }
+   }
+
+   public void changeOneRandomCell(){
+      int randomIndex = (int )(Math.random() * this.getNumberOfCells() -1); // 0(inclusive) to n^2 - 1exclusive so that 24 is not picked
+      Cell randCell = this.findCell(randomIndex);
+
+      int R_MIN, R_MAX, C_MIN, C_MAX;
+      R_MIN = C_MIN = 1;
+      R_MAX = C_MAX = this.getN();
+
+      int r = randCell.getR() + 1;
+      int c = randCell.getC() + 1;
+
+      int rJumps = Math.max((R_MAX - r), (r - R_MIN));
+      int cJumps = Math.max((C_MAX - c), (c - C_MIN));
+      int numberOfJumps = Math.max(rJumps, cJumps);
+      numberOfJumps = genRandNumber(numberOfJumps);
+
+      //System.out.printf("RandCell is %s and numberJumps is %d\n", randCell, numberOfJumps);
+
+      randCell.setNumberOfJumps(numberOfJumps);// updates number of jumps
+      this.deleteNeighbors(randCell); // erases old neighbors
+      this.findNeighbors(randCell);
+
+      return;
+
    }
 
    /**
@@ -55,6 +106,37 @@ class Graph {
       }
    }
 
+ 
+   //new
+   /**
+    * Populates graph based on existing jump Values.
+    * @param jumpValues 
+    */
+   public void populateGraph(int [] jumpValues) {
+	   
+	  int R_MIN, R_MAX, C_MIN, C_MAX;
+	  R_MIN = C_MIN = 1;
+	  R_MAX = C_MAX = n;
+
+	  for (int r = R_MIN; r <= R_MAX; r++) {
+		  for (int c = C_MIN; c <= C_MAX; c++) {
+			  if (c == C_MAX && r == R_MAX) { // On last cell
+	               Cell cell = new Cell(n - 1, n - 1, 0);
+	               this.goal = cell;
+	               this.add(cell);
+	               continue;
+	            }
+			  
+	            int numberOfJumps = jumpValues[(r-1)*n + c - 1];
+	            Cell cell = new Cell(r - 1, c - 1, numberOfJumps);
+	            if (c == C_MIN && r == R_MIN){
+	               this.start = cell;
+	            }
+	            this.add(cell);
+	         }
+	      }
+   
+   }
    /**
     * Find all neighbors of each cell.
     * Once neighbors for each cell are found, they are added to that
@@ -115,11 +197,6 @@ class Graph {
       return neighbors;
    }
 
-   
-   //new
-   public void deleteNeighbors(Cell cell){
-	   cell.setNeighbors(null);
-   }
    /**
     * Add cell to graph.
     * Calculates index to add to based on cell's (c,r) values.
@@ -145,6 +222,10 @@ class Graph {
       return cell;
    }
 
+   public Cell findCell(int index){
+      return cells[index];
+   }
+
    /**
     * Get index of cell in underlying array.
     * @param cell
@@ -157,18 +238,6 @@ class Graph {
       int index = (n * r) + c;
       return index;
    }
-   // new
-   public Cell getCellAt(int index){
-	   int row = 0;
-	   int col = 0;
-	   int x = index;
-	   while((x- n) >= 0){
-		   x=x-n;
-		   row++;
-	   }
-		col = index - row*n;
-		return this.findCell(row, col);
-   } 
 
 
    /**
@@ -177,7 +246,7 @@ class Graph {
     * @param numberOfJumps maximum value returned by function
     * @return randNum The random number no greater than numberOfMoves
     */
-   public int genRandNumber(int numberOfJumps) {
+   private static int genRandNumber(int numberOfJumps) {
       Random r = new Random();
       int randNum = r.nextInt((numberOfJumps - 1) + 1) + 1;
       return randNum;
@@ -215,6 +284,10 @@ class Graph {
       return goal;
    }
 
+   public void deleteNeighbors(Cell cell){
+      cell.setNeighbors(null);
+   }
+
    /**
     * Prints to console all of the neighbors of the given cell.
     *
@@ -230,6 +303,69 @@ class Graph {
          System.out.println();
       }
    }
+
+   /**
+    * Starts at Goal cell and traces back to find distance to the Start cell.
+    * This method relies on each cell's getPrev() method, which will be null
+    * if BFS has not yet been used on the graph.
+    * If any cell in the path from Goal to Start is null, the method will
+    * return -1.
+    * @param start
+    * @param goal
+    * @return distance from Start to Goal in terms of number of jumps
+    */
+   public int cellDistance(Cell start, Cell goal) {
+      Cell cell = goal;
+      int kValue = 0;
+      if (start.equals(goal)){
+         return 0;
+      }
+      while (cell.getPrev() != null){
+         cell = cell.getPrev();
+         kValue++;
+         if (cell.equals(start)) {
+            return kValue;
+         }
+      }
+      return -1;
+   }
+
+   public int heuristic(Cell cell){
+     if (cell.getR() == n-1 && cell.getC() == n-1){
+        return 0;
+     } else if (cell.getR() == n-1 || cell.getC() == n-1){
+        return 1;
+     } else {
+        return 2;
+     }
+   }
+
+   public void setDistances(){
+      this.distances = new int[numberOfCells];
+      for (int i = 0; i < numberOfCells; i++) {
+         int value = cellDistance(start, cells[i]);
+         this.distances[i] = value;
+      }
+   }
+
+   public int[] getDistances(){
+      if (this.distances == null){
+         this.setDistances();
+      }
+      return this.distances;
+   }
+
+
+   public void cleanGraph() {
+      int numberOfCells = this.getNumberOfCells();
+      for(int i = 0 ; i < numberOfCells ; i++){
+         this.findCell(i).setPrev(null);
+         this.findCell(i).setVisited(false);
+      }
+   }
 }
+
+
+
 
 
