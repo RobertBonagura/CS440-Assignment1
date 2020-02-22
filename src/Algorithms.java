@@ -307,7 +307,8 @@ public class Algorithms {
 			   
 		   }
 	      
-		   		 
+		   Arrays.sort(mutatedGraphs, new GenAlgoComparator());  
+ 		 
 	       Solution s = BFS(mutatedGraphs[0]);
 	         int newK = s.getK();
 		   System.out.println("  \n RETURNED K = "+ newK + "\n" + s.toString());
