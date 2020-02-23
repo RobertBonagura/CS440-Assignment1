@@ -214,5 +214,189 @@ public class Algorithms {
 
    }
 
+   public static Graph Genetic(int n, int population){
+      if(population > 1){
+         int cycles = 100;
+         // Generate initial population
+         Graph [] intialPopulation = new Graph[population];
+
+         for (int i = 0; i < population; i++){
+            intialPopulation[i] = new Graph(n);
+            intialPopulation[i].populateGraph();
+            intialPopulation[i].populateNeighbors();
+            intialPopulation[i].setDistances();
+            intialPopulation[i].cleanGraph();
+
+         }
+         Arrays.sort(intialPopulation, new GenAlgoComparator());
+
+         Solution newSolution = BFS(intialPopulation[0]);
+         intialPopulation[0].cleanGraph();
+         //System.out.println(" ~~~~~~~~~~~~~Best k value in initial population: \n" + newSolution.toString());
+
+         Graph [] mutatedGraphs = null;
+
+         while(cycles > 0){
+            //STEP 1,2: SELECTION, CROSS-OVER
+            Graph [] CrossOvers =  GeneticSelection(intialPopulation);
+            //STEP 3: MUTATION
+            mutatedGraphs = GeneticMutation(CrossOvers);
+            cycles--;
+            for(int i = 0; i< mutatedGraphs.length; i++){
+               intialPopulation[i] = new Graph(mutatedGraphs[i]);
+               intialPopulation[i].cleanGraph();
+            }
+         }
+
+         Solution s = BFS(mutatedGraphs[0]);
+         int newK = s.getK();
+         // LASTC 		  // System.out.println("  \n RETURNED K = "+ newK + "\n" + s.toString());
+         mutatedGraphs[0].cleanGraph();
+
+         return mutatedGraphs[0];
+
+      }else{
+         System.out.println("Enter at least a population of 2 or more.");
+         return null;
+      }
+
+   }
+
+
+   /**
+    * GeneticSelection Selects the fittest graphs by coupling the graphs with the highest fitness together.
+    * @param intialPopulation : population at the start of the cycle
+    * @return Graph[] CrossOvers : the resulting population from coupling fittest graphs together.
+    */
+   public static Graph[] GeneticSelection( Graph[] intialPopulation){
+      boolean even = (intialPopulation.length%2 == 0);
+
+      for(Graph g : intialPopulation){  g.cleanGraph(); }
+      Arrays.sort(intialPopulation, new GenAlgoComparator());
+      for(int i = 0; i < intialPopulation.length; i++){
+         intialPopulation[i].cleanGraph(); // just in case
+      }
+
+
+      int max;
+      if(even){max =intialPopulation.length; }
+      else		{ max = intialPopulation.length -1;} //drop the one with the lowest fitness
+
+      Graph [] CrossOvers = new Graph[max];
+
+      //Elitism: always keep the first one and put it in the last index
+      CrossOvers[0] = new Graph(intialPopulation[0]);
+      CrossOvers[0].cleanGraph();
+
+      Graph parent1 = null, parent2= null;
+      for(int i = 0; i < max ; i+=2){ // selection
+         if(i+ 1 < max){
+
+            parent1 = intialPopulation[i];
+            parent2 = intialPopulation[i+1];
+            CrossOvers[i+1] = new Graph(GeneticCrossOver( parent1, parent2));
+            CrossOvers[i+1].cleanGraph();
+         }
+         if(i+2 < max){
+            CrossOvers[i+2] = new Graph(GeneticCrossOver( parent2, parent1));
+            CrossOvers[i+2].cleanGraph();
+         }
+      }
+      Arrays.sort(CrossOvers, new GenAlgoComparator());
+
+      return CrossOvers;
+   }
+
+   /**
+    * GeneticMutation takes in a population and mutate a graph with 90% chance. It also perpetuate the best graph untouched
+    * into the next generation.
+    * @param CrossOvers : graph array that holds population after applying the cross-over function
+    * @return the mutated version of CrossOvers
+    */
+   public static Graph[] GeneticMutation(Graph [] CrossOvers){
+
+      for(Graph g : CrossOvers){  g.cleanGraph(); }
+
+      Arrays.sort(CrossOvers, new GenAlgoComparator());
+      for(int i = 0; i < CrossOvers.length; i++){
+         CrossOvers[i].cleanGraph(); // just in case
+      }
+
+      Graph [] mutatedGraphs = new Graph[CrossOvers.length];
+      for(int i = 0; i < CrossOvers.length; i++){
+
+         if(i== 0){ // Elitism: maintains the graph with the best k value untouched
+            mutatedGraphs[i] = new Graph(CrossOvers[i]);
+
+         }else{
+            Random r = new Random();
+            double randMutation = r.nextDouble();
+
+            if (randMutation < 0.9){
+
+               mutatedGraphs[i] = new Graph(CrossOvers[i]);
+               mutatedGraphs[i].cleanGraph();
+               mutatedGraphs[i].changeOneRandomCell();
+
+            }else{
+               mutatedGraphs[i] = new Graph(CrossOvers[i]);
+            }
+         }
+         mutatedGraphs[i].cleanGraph();
+
+      }
+
+      Arrays.sort(mutatedGraphs, new GenAlgoComparator());
+      for(int i = 0; i < mutatedGraphs.length; i++){
+         mutatedGraphs[i].cleanGraph();
+      }
+
+      Solution ss = BFS(mutatedGraphs[0]);
+      //System.out.println("  After Mutation, best k : \n" + ss.toString());
+      mutatedGraphs[0].cleanGraph();
+
+
+      return mutatedGraphs;
+   }
+
+
+   /**
+    *
+    * @param  parent1 : graph1 for cross-over
+    * @param  parent2 : graph2 for cross-over
+    * @return graph with upper half from parent1 and lower half from parent2
+    */
+   public static Graph GeneticCrossOver(Graph parent1, Graph parent2){
+      parent1.cleanGraph();
+      parent2.cleanGraph();
+      int n = parent1.getN();
+      int half = n/2; // rounded down
+      // just get all jump values then assemble graph? Split values horizontally!
+      int[] jumpValues = new int[n*n];
+      int index = 0;
+      for(int i = 0; i <= half ; i++){// half rows
+         for(int j = 0; j < n ; j++){ //cols
+            jumpValues[i*n + j] = parent1.findCell(i*n + j).getNumberOfJumps();
+
+         }
+      }
+
+      for(int i = half + 1 ; i < n ; i++){// half rows
+         for(int j = 0; j < n ; j++){ //cols
+            jumpValues[i*n + j] = parent2.findCell(i*n + j).getNumberOfJumps();
+         }
+      }
+
+
+      Graph crossedOverGraph = new Graph(n);
+      crossedOverGraph.populateGraph();
+      //crossedOverGraph.populateGraph(jumpValues);
+      crossedOverGraph.populateNeighbors();
+      crossedOverGraph.setDistances();
+      crossedOverGraph.cleanGraph();
+      return crossedOverGraph;
+
+
+   }
 
 }

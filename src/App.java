@@ -72,6 +72,14 @@ public class App {
         System.out.println("A* search on result of HillClimbing");
         Solution solution6 = Algorithms.AStarSearch(hillGraph);
         System.out.println(solution6);
+
+        System.out.println("Algorithms.Genetic(5, 2)");
+        Graph mutatedGraph = Algorithms.Genetic(5, 20);
+        GUI gui7 = new GUI() ;
+        gui7.run(mutatedGraph, "Mutated Puzzle");
+        Solution solution7 = Algorithms.BFS(mutatedGraph);
+        System.out.println(solution7);
+
     }
 
 }
