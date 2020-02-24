@@ -221,6 +221,44 @@ public class Main {
       return result;
    }
 
+   private static void task8(){
+      int[] puzzlesSizes = new int[]{5, 7, 9, 11};
+      int REPETITIONS = 50;
+      Solution[][] solutions_BFS = new Solution[4][REPETITIONS];
+      Solution[][] solutions_SPF = new Solution[4][REPETITIONS];
+      Solution[][] solutions_AStar = new Solution[4][REPETITIONS];
+      for (int i = 0; i < 4; i++){
+         for (int j = 0; j < REPETITIONS; j++){
+            Graph graph = new Graph(puzzlesSizes[i]);
+            solutions_BFS[i][j] = Algorithms.BFS(graph);
+            solutions_SPF[i][j] = Algorithms.SPF(graph);
+            solutions_AStar[i][j] = Algorithms.AStarSearch(graph);
+         }
+      }
+      //plotTask8(solutions_BFS, solutions_SPF, solutions_AStar);
+      //int REPETITIONS = 50;
+      long totalTime_ns_5 = 0;
+      long totalTime_ns_7 = 0;
+      long totalTime_ns_9 = 0;
+      long totalTime_ns_11 = 0;
+
+      for (int i = 0; i < REPETITIONS; i++){
+         totalTime_ns_5 =+ solutions_BFS[0][i].getTime();
+         totalTime_ns_7 =+ solutions_BFS[1][i].getTime();
+         totalTime_ns_9 =+ solutions_BFS[2][i].getTime();
+         totalTime_ns_11 =+ solutions_BFS[3][i].getTime();
+      }
+
+      double avgTime_ms_5 = totalTime_ns_5 / REPETITIONS / Math.pow(10,6);
+      double avgTime_ms_7 = totalTime_ns_7 / REPETITIONS / Math.pow(10,6);
+      double avgTime_ms_9 = totalTime_ns_9 / REPETITIONS / Math.pow(10,6);
+      double avgTime_ms_11 = totalTime_ns_11 / REPETITIONS / Math.pow(10,6);
+
+      System.out.println(""+ avgTime_ms_5 + " " + avgTime_ms_7 + " " +
+              avgTime_ms_9 + " " + avgTime_ms_11);
+   }
+
+
    private static void task9() {
 
       int n = 500;
