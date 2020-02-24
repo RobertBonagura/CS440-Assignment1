@@ -44,7 +44,7 @@ public class App {
         //GUI numberOfMovesGUI = new GUI();
         //numberOfMovesGUI.createNumberOfMovesGUI(n, distancePerCell);
 
-        int iterations = 100;
+        int iterations = 100;/*
         System.out.printf("Performing Hill Climbing algorithm to create a " +
                         "difficult %s-by-%s puzzle...\n", n, n);
         HillClimbingResult hillResult = Algorithms.HillClimbing(graph,
@@ -74,12 +74,12 @@ public class App {
         System.out.println(solution6);
 
         System.out.println("Algorithms.Genetic(5, 2)");
-        Graph mutatedGraph = Algorithms.Genetic(5, 20);
+        Graph mutatedGraph = Algorithms.Genetic(5, 20).graph;
         GUI gui7 = new GUI() ;
         gui7.run(mutatedGraph, "Mutated Puzzle");
         Solution solution7 = Algorithms.BFS(mutatedGraph);
         System.out.println(solution7);
-
+*/
     }
 
 }

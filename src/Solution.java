@@ -10,23 +10,23 @@ public class Solution {
 
    private int k; // number of moves to solution
    private LinkedList<Cell> path;
-   private long time;
+   private long time_ns;
 
    /**
     * Default constructor for when there is a k value but no path to solution.
     */
-   public Solution(int k, long time){
+   public Solution(int k, long time_ns){
       this.k = k;
-      this.time = time;
+      this.time_ns = time_ns;
    }
 
    /**
     * Default constructor for when there is a path to the solution.
     */
-   public Solution(int k, LinkedList<Cell> path, long time){
+   public Solution(int k, LinkedList<Cell> path, long time_ns){
       this.k = k;
       this.path = path;
-      this.time = time;
+      this.time_ns = time_ns;
    }
 
    @Override
@@ -41,8 +41,8 @@ public class Solution {
             sb.append(cell.toString());
          }
       }
-      double ms = (double) time / Math.pow(10,6);
-      sb.append("\nFound in: " + (time / Math.pow(10,6)) + " ms\n");
+      double ms = (double) time_ns / Math.pow(10,6);
+      sb.append("\nFound in: " + (time_ns / Math.pow(10,6)) + " ms\n");
       String result = sb.toString();
       return result;
    }
@@ -52,7 +52,7 @@ public class Solution {
    }
 
    public long getTime(){
-      return this.time;
+      return this.time_ns;
    }
 }
 

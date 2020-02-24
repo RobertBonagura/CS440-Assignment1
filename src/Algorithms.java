@@ -180,43 +180,32 @@ public class Algorithms {
     * @param iterations
     * @return
     */
-   public static HillClimbingResult HillClimbing(Graph graph,
-                                                 Solution solution,
+   public static Result HillClimbing(Graph graph, Solution solution,
                                                  int iterations) {
-      Graph curGraph = new Graph(graph);
-      int[] kValues = new int[iterations];
-      double[] times_ms = new double[iterations];
-      int currentK = solution.getK();
 
-      long bestTime_ns, totalTime_ns;
-      bestTime_ns = totalTime_ns = System.nanoTime();
-      int chosenIndex = 0;
+      long startTime_ns = System.nanoTime();
+      Graph curGraph = new Graph(graph);
       for (int i = 0; i < iterations; i++){
-         long startTime_ns = System.nanoTime();
          Graph newGraph = new Graph(curGraph);
          newGraph.changeOneRandomCell();
          Solution newSolution = BFS(newGraph);
-         int newK = newSolution.getK();
-         if (newK >= currentK){
-            currentK = newK;
+         if (newSolution.getK() >= solution.getK()){
+            solution = newSolution;
             curGraph = new Graph(newGraph);
-            chosenIndex = i;
          }
-         kValues[i] = newK;
-         long iterationTime_ns = (System.nanoTime() - startTime_ns);
-         times_ms[i] = (iterationTime_ns / Math.pow(10,6));
       }
+      long totalTime_ns = System.nanoTime() - startTime_ns;
+      double totalTime_ms = totalTime_ns / Math.pow(10, 6);
 
-      HillClimbingResult result = new HillClimbingResult(curGraph, kValues,
-              chosenIndex, times_ms);
-
+      Result result = new Result(curGraph, solution, totalTime_ms);
       return result;
 
    }
 
-   public static Graph Genetic(int n, int population){
+   public static Result Genetic(int n, int population, int cycles){
+
+      long startTime_ns = System.nanoTime();
       if(population > 1){
-         int cycles = 100;
          // Generate initial population
          Graph [] intialPopulation = new Graph[population];
 
@@ -235,9 +224,9 @@ public class Algorithms {
          //System.out.println(" ~~~~~~~~~~~~~Best k value in initial population: \n" + newSolution.toString());
 
          Graph [] mutatedGraphs = null;
+         double[] times_ms = new double[cycles];
 
          while(cycles > 0){
-            //STEP 1,2: SELECTION, CROSS-OVER
             Graph [] CrossOvers =  GeneticSelection(intialPopulation);
             //STEP 3: MUTATION
             mutatedGraphs = GeneticMutation(CrossOvers);
@@ -252,8 +241,11 @@ public class Algorithms {
          int newK = s.getK();
          // LASTC 		  // System.out.println("  \n RETURNED K = "+ newK + "\n" + s.toString());
          mutatedGraphs[0].cleanGraph();
-
-         return mutatedGraphs[0];
+         Solution solution = Algorithms.BFS(mutatedGraphs[0]);
+         long totalTime_ns = System.nanoTime() - startTime_ns;
+         double totalTime_ms = totalTime_ns / Math.pow(10, 6);
+         Result result = new Result(mutatedGraphs[0], solution, totalTime_ms);
+         return result;
 
       }else{
          System.out.println("Enter at least a population of 2 or more.");
