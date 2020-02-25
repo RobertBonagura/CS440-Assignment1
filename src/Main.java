@@ -7,6 +7,19 @@ public class Main {
 
       Scanner scan = new Scanner(System.in);
 
+      int n = 11;
+      Graph graph = new Graph(n);
+      graph.populateGraph();
+      graph.populateNeighbors();
+      Solution solution1 = Algorithms.BFS(graph);
+      Solution solution2 = Algorithms.SPF(graph);
+      Solution solution3 = Algorithms.AStarSearch(graph);
+      System.out.println(solution1);
+      System.out.println(solution2);
+      System.out.println(solution3);
+
+
+
       System.out.printf("WELCOME!\n\n");
 
       // Task 2
